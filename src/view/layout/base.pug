@@ -2,7 +2,20 @@ doctype html
 html(lang="ko")
     head
         include _meta
+        link(
+            rel="stylesheet",
+            as="style",
+            crossorigin="",
+            href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+        )
+        link(
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css",
+            rel="stylesheet",
+            integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor",
+            crossorigin="anonymous"
+        )
         link(rel="stylesheet", href="/static/css/ggantt.css")
+        style html, body { font-family: Pretendard }
         title gGantt
     if toast
         - var toastEnable = true;
@@ -11,5 +24,10 @@ html(lang="ko")
         include _toast
         block contents
         include _footer
+        script(
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js",
+            integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2",
+            crossorigin="anonymous"
+        )
         script(src="/static/js/ggantt.js")
         block scripts
