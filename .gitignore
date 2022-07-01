@@ -1,0 +1,6 @@
+/node_modules
+/html
+/client
+/server/ssl/*
+/server/data/*.json
+.env

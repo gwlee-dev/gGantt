@@ -1,0 +1,53 @@
+// _navbar.scss
+
+.navbar {
+    --#{$prefix}navbar-toggler-icon-bg: #{var(
+            --#{$prefix}navbar-toggler-icon-bg-swatch
+        )};
+    --#{$prefix}navbar-color: #{var(--#{$prefix}navbar-color-swatch)};
+    padding: 0.75rem 0;
+    background-color: transparent;
+    background-image: linear-gradient(
+        to bottom,
+        rgba(var(--gr-body-bg), 1),
+        rgba(var(--gr-body-bg), 0.95)
+    );
+    .navbar-brand {
+        font-weight: $font-weight-bold;
+        line-height: 1;
+    }
+
+    .navbar-toggler {
+        --#{$prefix}border-width: 0;
+        &:hover {
+            background-color: var(--#{$prefix}btn-hover-bg);
+        }
+    }
+    .nav-link {
+        --#{$prefix}btn-hover-bg: #{var(--#{$prefix}secondary-bg)};
+        --#{$prefix}btn-border-width: 0;
+        --#{$prefix}btn-color: #{var(--#{$prefix}body-color)};
+    }
+}
+
+#colorSwitcherIcon {
+    margin-right: 0.25rem;
+    &::before {
+        display: inline-block;
+        font-family: $bootstrap-icons-font !important;
+        font-style: normal;
+        line-height: 1;
+        vertical-align: -0.125em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    &.light::before {
+        content: "\f5A2";
+    }
+    &.dark::before {
+        content: "\f497";
+    }
+    &.auto::before {
+        content: "\f675";
+    }
+}

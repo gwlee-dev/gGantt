@@ -1,0 +1,60 @@
+/*!
+* Bootstrap v5.2.0-beta1 (https://getbootstrap.com/)
+* PR: Add dark mode support #35857
+*/
+
+// Configuration
+@import "bootstrap/scss/functions";
+@import "variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "utilities";
+
+// Layout & components
+@import "root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/tables";
+//  @import "bootstrap/scss/forms";
+    @import "bootstrap/scss/forms/labels";
+    @import "bootstrap/scss/forms/form-text";
+    @import "bootstrap/scss/forms/form-control";
+    @import "forms/form-select";
+    @import "forms/form-check";
+    @import "bootstrap/scss/forms/form-range";
+    @import "bootstrap/scss/forms/floating-labels";
+    @import "bootstrap/scss/forms/input-group";
+    @import "bootstrap/scss/forms/validation";
+
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "dropdown";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/card";
+@import "accordion";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/progress";
+@import "bootstrap/scss/list-group";
+@import "close";
+@import "bootstrap/scss/toasts";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/carousel";
+@import "bootstrap/scss/spinners";
+@import "bootstrap/scss/offcanvas";
+@import "bootstrap/scss/placeholders";
+
+// Helpers
+@import "bootstrap/scss/helpers";
+
+// Utilities
+@import "bootstrap/scss/utilities/api";

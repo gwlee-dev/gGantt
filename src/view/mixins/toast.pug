@@ -1,0 +1,9 @@
+mixin toast(id, contents)
+    .toast(
+        role="alert",
+        aria-live="assertive",
+        aria-atomic="true",
+        id=id,
+        data-bs-delay="1000"
+    )
+        .toast-body.text-center.fs-6= contents

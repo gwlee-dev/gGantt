@@ -1,0 +1,11 @@
+// root.scss
+:root,
+[data-theme="light"] {
+    --#{$prefix}navbar-toggler-icon-bg-swatch: #{$navbar-light-toggler-icon-bg} !important;
+    --#{$prefix}navbar-color-swatch: #{$navbar-light-color};
+}
+
+[data-theme="dark"] {
+    --#{$prefix}navbar-toggler-icon-bg-swatch: #{$navbar-dark-toggler-icon-bg} !important;
+    --#{$prefix}navbar-color-swatch: #{$navbar-dark-color};
+}

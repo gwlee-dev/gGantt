@@ -1,0 +1,15 @@
+// index.scss
+
+.searchbox {
+    .form-control {
+        padding-right: 1.75rem;
+    }
+    position: relative;
+    i.bi {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translate(-100%, -50%);
+        color: $secondary;
+    }
+}

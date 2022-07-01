@@ -1,0 +1,7 @@
+// buttons.scss
+
+.btn-swatch {
+    --#{$prefix}btn-hover-bg: #{var(--#{$prefix}secondary-bg)};
+    --#{$prefix}btn-border-width: 0;
+    --#{$prefix}btn-color: #{var(--#{$prefix}body-color)};
+}

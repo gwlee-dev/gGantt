@@ -1,0 +1,6 @@
+include ../mixins/toast
+
+if toast
+    .toast-container.fixed-top.start-50.translate-middle-x.mt-7
+        each msg, id in toast
+            +toast(id, msg)

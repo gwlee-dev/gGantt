@@ -1,0 +1,41 @@
+mixin assignment
+    #assignment.modal.fade(
+        tabindex="-1",
+        aria-labelledby="assignmentLabel",
+        aria-hidden="true"
+    )
+        .modal-dialog.modal-dialog-centered.modal-lg
+            .modal-content
+                .modal-header
+                    h5#assignmentLabel.modal-title 담당자 배정
+                    button.btn-close(
+                        type="button",
+                        data-bs-dismiss="modal",
+                        aria-label="Close"
+                    )
+                .modal-body
+                    .row.gx-3
+                        .col
+                            ul.list-group.assign-option
+                                li.list-group-item An item
+                                li.list-group-item A second item
+                                li.list-group-item A third item
+                                li.list-group-item A fourth item
+                                li.list-group-item And a fifth one
+                        .col-auto
+                            .vstack.h-100.justify-content-center.gap-2
+                                button.btn.btn-sm.btn-secondary &rarr;
+                                button.btn.btn-sm.btn-secondary &larr;
+                        .col
+                            ul.list-group.assign-selected
+                                li.list-group-item An item
+                                li.list-group-item A second item
+                                li.list-group-item A third item
+                                li.list-group-item A fourth item
+                                li.list-group-item And a fifth one
+                .modal-footer
+                    button.btn.btn-secondary(
+                        type="button",
+                        data-bs-dismiss="modal"
+                    ) 닫기
+                    button.btn.btn-primary(type="button") 저장

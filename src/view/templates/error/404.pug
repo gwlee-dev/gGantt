@@ -1,0 +1,14 @@
+extends ../../layout/base
+
+block contents
+    body.d-flex.flex-column
+        .container.flex-grow-1.d-flex.flex-column
+            .row.g-0.my-auto
+                .col-md-8.col-lg-6.col-xxl-4.mx-auto.mb-10
+                    .vstack.gap-4.needs-validation(method="post")
+                        h1 오류
+                        h5 존재하지 않는 페이지 입니다. (404)
+                        button.btn.btn-secondary(
+                            type="submit",
+                            onclick="history.back();"
+                        ) #[i.bi.bi-chevron-left] 이전 페이지로

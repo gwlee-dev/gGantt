@@ -1,0 +1,9 @@
+{
+    "extends": [
+        "stylelint-config-recommended-scss",
+        "stylelint-config-prettier-scss"
+    ],
+    "rules": {
+        "scss/no-global-function-names": null
+    }
+}

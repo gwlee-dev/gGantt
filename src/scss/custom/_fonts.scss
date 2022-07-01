@@ -1,0 +1,31 @@
+$bootstrap-icons-font-src: url("../fonts/bootstrap-icons.woff2?524846017b983fc8ded9325d94ed40f3")
+        format("woff2"),
+    url("../fonts/bootstrap-icons.woff?524846017b983fc8ded9325d94ed40f3")
+        format("woff");
+
+@font-face {
+    font-family: Pretendard;
+    font-weight: 800;
+    font-display: swap;
+    src: local("Pretendard ExtraBold"),
+        url("../fonts/Pretendard-ExtraBold.woff2") format("woff2"),
+        url("../fonts/woff/Pretendard-ExtraBold.woff") format("woff");
+}
+
+@font-face {
+    font-family: Pretendard;
+    font-weight: 700;
+    font-display: swap;
+    src: local("Pretendard Bold"),
+        url("../fonts/Pretendard-Bold.woff2") format("woff2"),
+        url("../fonts/Pretendard-Bold.woff") format("woff");
+}
+
+@font-face {
+    font-family: Pretendard;
+    font-weight: 400;
+    font-display: swap;
+    src: local("Pretendard Regular"),
+        url("../fonts/Pretendard-Regular.woff2") format("woff2"),
+        url("../fonts/Pretendard-Regular.woff") format("woff");
+}
