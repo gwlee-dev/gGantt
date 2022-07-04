@@ -1,41 +1,4 @@
-const sampleData = [
-    {
-        title: "디지털마케팅 이이이일보 업무",
-        id: "1",
-        schedule: [
-            {
-                title: "디지털마케팅 이이이일보 업무 A",
-                id: "1A",
-                start: "2022-07-01 12:00:00",
-                end: "2022-07-01 15:00:00",
-            },
-            {
-                title: "디지털마케팅 이이이일보 업무 B",
-                id: "1B",
-                start: "2022-07-01 03:00:00",
-                end: "2022-07-01 04:00:00",
-            },
-        ],
-    },
-    {
-        title: "디지털마케팅 일보 업무",
-        id: "2",
-        schedule: [
-            {
-                title: "디지털마케팅 일보 업무 A",
-                id: "2A",
-                start: "2022-07-01 13:30",
-                end: "2022-07-01 14:00",
-            },
-            {
-                title: "디지털마케팅 일보 업무 B",
-                id: "2B",
-                start: "2022-07-01 15:30",
-                end: "2022-07-01 20:00",
-            },
-        ],
-    },
-];
+import { sampleData } from "./sampledata";
 
 export const gGantt = {
     Chart: class {
@@ -61,9 +24,15 @@ export const gGantt = {
                         "flex-nowrap",
                         "mb-2"
                     ),
-                    ticks: [...Array(25)].map((x, index) => {
-                        x = createDiv("tick", "col");
-                        x.innerHTML = index;
+                    ticks: [...Array(24)].map((x, index) => {
+                        x = createDiv(
+                            "tick",
+                            "col",
+                            "text-end",
+                            "border-end",
+                            "pe-1"
+                        );
+                        x.innerHTML = index + 1;
                         return x;
                     }),
                 },
@@ -99,22 +68,37 @@ export const gGantt = {
                 this.update();
             };
             this.createBar = (name, start, end) => {
-                const barStart =
-                    ((start - this.lastMidnight) / this.dayTime) * 100;
-                const barDuring = ((end - start) / this.dayTime) * 100;
+                const alreadyStarted = start < this.lastMidnight;
+                let dueOffset = 0;
+                alreadyStarted && (dueOffset = this.lastMidnight - start);
+                const barDuring =
+                    ((end - start - dueOffset) / this.dayTime) * 100;
+                const barStart = alreadyStarted
+                    ? 0
+                    : ((start - this.lastMidnight) / this.dayTime) * 100;
+
                 const barWrap = this.template.barWrap.cloneNode();
                 const bar = this.template.bar.cloneNode();
+
                 bar.style.marginLeft = barStart + "%";
                 bar.style.width = barDuring + "%";
                 bar.innerHTML = name;
+
                 barWrap.append(bar);
                 this.layout.bars.append(barWrap);
-                console.log(barStart, barDuring);
             };
             this.update = () => {
                 const { data, layout, template } = this;
 
-                data.forEach((group) => {
+                data.filter((group) => {
+                    const starts = group.schedule
+                        .map((x) => +new Date(x.start))
+                        .filter((x) => x < this.nextMidnight);
+                    const ends = group.schedule
+                        .map((x) => +new Date(x.end))
+                        .filter((x) => x > this.lastMidnight);
+                    return !!starts.length && !!ends.length;
+                }).forEach((group) => {
                     const label = template.label.cloneNode();
                     label.innerHTML = group.title;
                     layout.labels.append(label);
@@ -124,7 +108,15 @@ export const gGantt = {
                     const latest = Math.max(
                         ...group.schedule.map((item) => +new Date(item.end))
                     );
-                    this.createBar(group.title, earliest, latest);
+                    this.createBar(
+                        `${group.title} (${new Date(
+                            earliest
+                        ).toLocaleString()} ~ ${new Date(
+                            latest
+                        ).toLocaleString()})`,
+                        earliest,
+                        latest
+                    );
                 });
             };
 
