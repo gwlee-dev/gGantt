@@ -73,14 +73,13 @@ export const gGantt = {
                 alreadyStarted && (dueOffset = this.lastMidnight - start);
                 const barDuring =
                     ((end - start - dueOffset) / this.dayTime) * 100;
-                const barStart = alreadyStarted
-                    ? 0
-                    : ((start - this.lastMidnight) / this.dayTime) * 100;
+                const barStart =
+                    ((start - this.lastMidnight) / this.dayTime) * 100;
 
                 const barWrap = this.template.barWrap.cloneNode();
                 const bar = this.template.bar.cloneNode();
 
-                bar.style.marginLeft = barStart + "%";
+                !alreadyStarted && (bar.style.marginLeft = barStart + "%");
                 bar.style.width = barDuring + "%";
                 bar.innerHTML = name;
 
