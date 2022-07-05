@@ -1,3 +1,4 @@
+import { createPopper } from "@popperjs/core";
 import { sampleData } from "./sampleData";
 
 const createEl = (tag, mainClass, ...className) => {
@@ -12,6 +13,7 @@ export const gGantt = {
         option = {
             autoInitialize: true,
             displayMode: "group",
+            showRange: true,
         };
 
         constructor(root, data, userOption) {
@@ -31,18 +33,23 @@ export const gGantt = {
                 "label-area",
                 "col",
                 "col-2",
-                "flex-nowrap"
+                "vstack",
+                "gap-2",
+                "flex-nowrap",
+                "h-100"
             ),
-            bars: createEl("div", "bar-area", "col", "col-10", "overflow-auto"),
+            bars: createEl(
+                "div",
+                "bar-area",
+                "col",
+                "col-10",
+                "vstack",
+                "gap-2",
+                "overflow-auto",
+                "h-100"
+            ),
             grad: {
-                wrap: createEl(
-                    "div",
-                    "label-area",
-                    "row",
-                    "g-0",
-                    "flex-nowrap",
-                    "mb-2"
-                ),
+                wrap: createEl("div", "tick", "row", "g-0", "flex-nowrap"),
                 ticks: [...Array(24)].map((x, index) => {
                     x = createEl(
                         "div",
@@ -78,14 +85,13 @@ export const gGantt = {
 
         init = () => {
             this.root.className = "row";
-            const fieldName = createEl(
-                "div",
-                "field",
-                "w-100",
-                "fw-bold",
-                "mb-2"
-            );
+            const fieldName = createEl("div", "field", "w-100", "fw-bold");
             fieldName.innerHTML = "데이터명";
+            if (this.option.tickPosition === "bottom") {
+                fieldName.classList.add("order-last");
+                this.layout.grad.wrap.classList.add("order-last");
+            }
+
             this.layout.labels.append(fieldName);
             this.layout.grad.wrap.append(...this.layout.grad.ticks);
             this.layout.bars.append(this.layout.grad.wrap);
@@ -93,7 +99,7 @@ export const gGantt = {
             this.draw();
         };
 
-        createBar = (name, start, end, labelTag) => {
+        createBar = (name, start, end, id, labelTag) => {
             const label = createEl(labelTag || "div", "label", "w-100");
             label.innerHTML = name;
 
@@ -111,11 +117,16 @@ export const gGantt = {
             alreadyStarted && !beContinue && bar.classList.add("rounded-end");
             !alreadyStarted && beContinue && bar.classList.add("rounded-start");
             bar.style.width = barDuring + "%";
-            bar.innerHTML = `${name} (${new Date(
-                start
-            ).toLocaleString()} ~ ${new Date(end).toLocaleString()})`;
+            bar.innerHTML = name;
+            const toStr = (date) => new Date(date).toLocaleString();
+            const str = `${toStr(start)} ~ ${toStr(end)}`;
+            const tooltip = createEl("div", "tooltip", "tooltip");
+            tooltip.id = id;
+            tooltip.innerHTML = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
+            this.root.append(tooltip);
+            this.option.showRange && bar.append(` ${str}`);
 
-            return { bar, label };
+            return { bar, label, tooltip };
         };
 
         draw = () => {
@@ -128,6 +139,20 @@ export const gGantt = {
                     .filter((x) => x > this.lastMidnight);
                 return !!starts.length && !!ends.length;
             });
+
+            const getChild = (schedule) =>
+                schedule.map((child) => {
+                    const obj = this.createBar(
+                        child.title,
+                        +new Date(child.start),
+                        +new Date(child.end),
+                        child.id,
+                        "div"
+                    );
+                    obj.barWrap = this.template.barWrap.cloneNode();
+                    obj.barWrap.append(obj.bar);
+                    return obj;
+                });
 
             if (this.option.displayMode === "group") {
                 data.forEach((group) => {
@@ -167,17 +192,7 @@ export const gGantt = {
                         "collapse",
                         "w-100"
                     );
-                    const objs = group.schedule.map((child) => {
-                        const obj = this.createBar(
-                            child.title,
-                            +new Date(child.start),
-                            +new Date(child.end),
-                            "div"
-                        );
-                        obj.barWrap = this.template.barWrap.cloneNode();
-                        obj.barWrap.append(obj.bar);
-                        return obj;
-                    });
+                    const objs = getChild(group.schedule);
                     const bars = objs.map((x) => x.barWrap);
                     const labels = objs.map((x) => x.label);
 
@@ -194,17 +209,8 @@ export const gGantt = {
                     const label = createEl("div", "label", "w-100");
                     label.innerHTML = group.title;
 
-                    const objs = group.schedule.map((child) => {
-                        const obj = this.createBar(
-                            child.title,
-                            +new Date(child.start),
-                            +new Date(child.end),
-                            "div"
-                        );
-                        obj.barWrap = this.template.barWrap.cloneNode();
-                        obj.barWrap.append(obj.bar);
-                        return obj;
-                    });
+                    const objs = getChild(group.schedule);
+
                     const bars = objs.map((x) => x.barWrap);
                     const labels = objs.map((x) => x.label);
 
@@ -257,6 +263,8 @@ const sampleEl = document.querySelector("#ggantt-sample");
 const test = new gGantt.Chart(sampleEl, sampleData, {
     autoInitialize: true, // default: true
     displayMode: "queue", // default: "collapse"
+    // tickPosition: "bottom", // default: null
+    showRange: true, // default: true
 });
 
 (() => {
