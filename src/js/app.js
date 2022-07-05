@@ -120,13 +120,9 @@ export const gGantt = {
             bar.innerHTML = name;
             const toStr = (date) => new Date(date).toLocaleString();
             const str = `${toStr(start)} ~ ${toStr(end)}`;
-            const tooltip = createEl("div", "tooltip", "tooltip");
-            tooltip.id = id;
-            tooltip.innerHTML = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
-            this.root.append(tooltip);
             this.option.showRange && bar.append(` ${str}`);
 
-            return { bar, label, tooltip };
+            return { bar, label };
         };
 
         draw = () => {
