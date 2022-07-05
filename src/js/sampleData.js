@@ -1,16 +1,16 @@
 export const sampleData = [
     {
-        title: "업무 A~B",
+        title: "일정그룹 A~B",
         id: "0",
         schedule: [
             {
-                title: "업무 A",
+                title: "일정 A",
                 id: "0A",
                 start: "2022-07-03 12:00:00",
                 end: "2022-07-03 15:00:00",
             },
             {
-                title: "업무 B",
+                title: "일정 B",
                 id: "0B",
                 start: "2022-07-03 03:00:00",
                 end: "2022-07-03 04:00:00",
@@ -18,23 +18,23 @@ export const sampleData = [
         ],
     },
     {
-        title: "업무 C~E",
+        title: "일정그룹 C~E",
         id: "1",
         schedule: [
             {
-                title: "업무 C",
+                title: "일정 C",
                 id: "1A",
                 start: "2022-07-03 12:00:00",
                 end: "2022-07-04 05:00:00",
             },
             {
-                title: "업무 D",
+                title: "일정 D",
                 id: "1Aaa",
                 start: "2022-07-04 05:00:00",
                 end: "2022-07-04 10:00:00",
             },
             {
-                title: "업무 E",
+                title: "일정 E",
                 id: "1B",
                 start: "2022-07-04 10:00:00",
                 end: "2022-07-04 15:00:00",
@@ -42,23 +42,23 @@ export const sampleData = [
         ],
     },
     {
-        title: "업무 F~H",
+        title: "일정그룹 F~H",
         id: "2",
         schedule: [
             {
-                title: "업무 F",
+                title: "일정 F",
                 id: "2asdA",
                 start: "2022-07-04 23:30",
                 end: "2022-07-05 02:00",
             },
             {
-                title: "업무 G",
+                title: "일정 G",
                 id: "2asdfA",
                 start: "2022-07-05 04:00",
                 end: "2022-07-05 10:00",
             },
             {
-                title: "업무 H",
+                title: "일정 H",
                 id: "2B",
                 start: "2022-07-05 10:30",
                 end: "2022-07-05 19:00",
@@ -66,17 +66,17 @@ export const sampleData = [
         ],
     },
     {
-        title: "업무 IJ",
+        title: "일정그룹 I~J",
         id: "3",
         schedule: [
             {
-                title: "업무 I",
+                title: "일정 I",
                 id: "3A",
                 start: "2022-07-05 07:30",
                 end: "2022-07-05 14:00",
             },
             {
-                title: "업무 J",
+                title: "일정 J",
                 id: "3B",
                 start: "2022-07-05 15:30",
                 end: "2022-07-06 20:00",

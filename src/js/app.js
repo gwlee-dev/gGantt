@@ -13,7 +13,9 @@ export const gGantt = {
         option = {
             autoInitialize: true,
             displayMode: "group",
-            showRange: true,
+            showRange: false,
+            useTooltip: true,
+            tooltipPlacement: "bottom",
         };
 
         constructor(root, data, userOption) {
@@ -128,23 +130,44 @@ export const gGantt = {
                 : barDuring + "%";
             bar.innerHTML = name;
             const toStr = (date) => new Date(date).toLocaleString();
-            const str = `${toStr(start)} ~ ${toStr(end)}`;
+            const str = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
             this.option.showRange && bar.append(` ${str}`);
 
-            const tooltip = createEl("div", "tooltip", "position-absolute");
-            tooltip.setAttribute("data-bs-toggle", "tooltip");
-            tooltip.setAttribute("data-bs-trigger", "manual");
-            tooltip.setAttribute("title", str);
-            this.root.append(tooltip);
+            if (this.option.useTooltip) {
+                const tooltipWrap = createEl(
+                    "div",
+                    "tooltip",
+                    "position-absolute"
+                );
+                const tooltip = createEl("div", "position-relative");
+                tooltip.setAttribute("data-bs-toggle", "tooltip");
+                tooltip.setAttribute(
+                    "data-bs-placement",
+                    this.option.tooltipPlacement
+                );
+                tooltip.setAttribute("data-bs-offset", "[10, 20]");
+                tooltip.setAttribute("data-bs-trigger", "manual");
+                tooltip.setAttribute("title", str);
+                tooltipWrap.append(tooltip);
+                document.body.append(tooltipWrap);
 
-            const instance = new window.bootstrap.Tooltip(tooltip);
-            bar.addEventListener("mousemove", () => {
-                instance.show();
-            });
+                const instance = new window.bootstrap.Tooltip(tooltip);
+                bar.addEventListener("mouseenter", () => {
+                    instance.show();
+                });
+                bar.addEventListener(
+                    "mousemove",
+                    ({ clientX: x, clientY: y }) => {
+                        tooltipWrap.style.left = x + "px";
+                        tooltipWrap.style.top = y + "px";
+                        instance.update();
+                    }
+                );
 
-            bar.addEventListener("mouseleave", () => {
-                instance.hide();
-            });
+                bar.addEventListener("mouseleave", () => {
+                    instance.hide();
+                });
+            }
 
             return { bar, label };
         };
@@ -264,8 +287,10 @@ const sampleEl = document.querySelector("#ggantt-sample");
 const test = new gGantt.Chart(sampleEl, sampleData, {
     autoInitialize: true, // default: true
     displayMode: "queue", // default: "group"
-    // tickPosition: "bottom", // default: null
-    showRange: true, // default: true
+    tickPosition: "bottom", // default: null
+    // showRange: true, // default: false
+    // useTooltip: true, // default: true
+    // tooltipPlacement: "top", // default: bottom
 });
 
 (() => {

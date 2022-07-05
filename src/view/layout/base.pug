@@ -17,13 +17,12 @@ html(lang="ko")
         link(rel="stylesheet", href="/static/css/ggantt.css")
         style html, body { font-family: Pretendard }
         title gGantt
-    if toast
-        - var toastEnable = true;
-    body(data-theme="auto", data-toast=toastEnable)
-        include _header
-        include _toast
+    body
+        header.navbar.navbar-expand-lg.sticky-top.bg-body
+            nav.px-5
+                a.navbar-brand(href="/") gGantt
+
         block contents
-        include _footer
         script(
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js",
             integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2",
