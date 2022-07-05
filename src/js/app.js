@@ -11,7 +11,7 @@ export const gGantt = {
     Chart: class {
         option = {
             autoInitialize: true,
-            displayMode: "collapse",
+            displayMode: "group",
         };
 
         constructor(root, data, userOption) {
@@ -104,7 +104,6 @@ export const gGantt = {
             const barDuring = ((end - start - dueOffset) / this.dayTime) * 100;
             const barStart = ((start - this.lastMidnight) / this.dayTime) * 100;
 
-            const barWrap = this.template.barWrap.cloneNode();
             const bar = this.template.bar.cloneNode();
 
             !alreadyStarted && (bar.style.marginLeft = barStart + "%");
@@ -115,23 +114,23 @@ export const gGantt = {
             bar.innerHTML = `${name} (${new Date(
                 start
             ).toLocaleString()} ~ ${new Date(end).toLocaleString()})`;
-            barWrap.append(bar);
 
-            return { barWrap, label };
+            return { bar, label };
         };
 
         draw = () => {
-            this.data
-                .filter((group) => {
-                    const starts = group.schedule
-                        .map((x) => +new Date(x.start))
-                        .filter((x) => x < this.nextMidnight);
-                    const ends = group.schedule
-                        .map((x) => +new Date(x.end))
-                        .filter((x) => x > this.lastMidnight);
-                    return !!starts.length && !!ends.length;
-                })
-                .forEach((group) => {
+            const data = this.data.filter((group) => {
+                const starts = group.schedule
+                    .map((x) => +new Date(x.start))
+                    .filter((x) => x < this.nextMidnight);
+                const ends = group.schedule
+                    .map((x) => +new Date(x.end))
+                    .filter((x) => x > this.lastMidnight);
+                return !!starts.length && !!ends.length;
+            });
+
+            if (this.option.displayMode === "group") {
+                data.forEach((group) => {
                     const earliest = Math.min(
                         ...group.schedule.map((item) => +new Date(item.start))
                     );
@@ -144,6 +143,8 @@ export const gGantt = {
                         latest,
                         "button"
                     );
+                    groupBar.barWrap = this.template.barWrap.cloneNode();
+                    groupBar.barWrap.append(groupBar.bar);
 
                     groupBar.label.classList.add("border-0", "m-0");
                     groupBar.label.setAttribute("data-bs-toggle", "collapse");
@@ -173,6 +174,8 @@ export const gGantt = {
                             +new Date(child.end),
                             "div"
                         );
+                        obj.barWrap = this.template.barWrap.cloneNode();
+                        obj.barWrap.append(obj.bar);
                         return obj;
                     });
                     const bars = objs.map((x) => x.barWrap);
@@ -184,6 +187,68 @@ export const gGantt = {
                     this.layout.bars.append(barCollapse);
                     this.layout.labels.append(labelCollapse);
                 });
+            }
+
+            if (this.option.displayMode === "several") {
+                data.forEach((group) => {
+                    const label = createEl("div", "label", "w-100");
+                    label.innerHTML = group.title;
+
+                    const objs = group.schedule.map((child) => {
+                        const obj = this.createBar(
+                            child.title,
+                            +new Date(child.start),
+                            +new Date(child.end),
+                            "div"
+                        );
+                        obj.barWrap = this.template.barWrap.cloneNode();
+                        obj.barWrap.append(obj.bar);
+                        return obj;
+                    });
+                    const bars = objs.map((x) => x.barWrap);
+                    const labels = objs.map((x) => x.label);
+
+                    this.layout.bars.append(...bars);
+                    this.layout.labels.append(...labels);
+                });
+            }
+
+            if (this.option.displayMode === "queue") {
+                data.forEach((group) => {
+                    const label = createEl("div", "label", "w-100");
+                    label.innerHTML = group.title;
+
+                    const objs = group.schedule.map((child) => {
+                        const obj = this.createBar(
+                            child.title,
+                            +new Date(child.start),
+                            +new Date(child.end),
+                            "div"
+                        );
+                        obj.barWrap = this.template.barWrap.cloneNode();
+                        obj.barWrap.classList.add(
+                            "position-absolute",
+                            "start-0",
+                            "top-50",
+                            "translate-middle-y"
+                        );
+                        obj.barWrap.append(obj.bar);
+                        return obj.barWrap;
+                    });
+
+                    const queue = createEl(
+                        "div",
+                        "queue",
+                        "w-100",
+                        "position-relative"
+                    );
+                    queue.innerHTML = "&nbsp;";
+
+                    queue.append(...objs);
+                    this.layout.bars.append(queue);
+                    this.layout.labels.append(label);
+                });
+            }
         };
     },
 };
@@ -191,7 +256,7 @@ export const gGantt = {
 const sampleEl = document.querySelector("#ggantt-sample");
 const test = new gGantt.Chart(sampleEl, sampleData, {
     autoInitialize: true, // default: true
-    displayMode: "collapse", // default: "collapse"
+    displayMode: "queue", // default: "collapse"
 });
 
 (() => {
