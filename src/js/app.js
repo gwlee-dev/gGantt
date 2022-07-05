@@ -98,6 +98,7 @@ export const gGantt = {
             label.innerHTML = name;
 
             const alreadyStarted = start < this.lastMidnight;
+            const beContinue = end > this.nextMidnight;
             let dueOffset = 0;
             alreadyStarted && (dueOffset = this.lastMidnight - start);
             const barDuring = ((end - start - dueOffset) / this.dayTime) * 100;
@@ -107,6 +108,9 @@ export const gGantt = {
             const bar = this.template.bar.cloneNode();
 
             !alreadyStarted && (bar.style.marginLeft = barStart + "%");
+            (alreadyStarted || beContinue) && bar.classList.remove("rounded");
+            alreadyStarted && !beContinue && bar.classList.add("rounded-end");
+            !alreadyStarted && beContinue && bar.classList.add("rounded-start");
             bar.style.width = barDuring + "%";
             bar.innerHTML = `${name} (${new Date(
                 start
