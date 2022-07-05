@@ -1,4 +1,3 @@
-import { createPopper } from "@popperjs/core";
 import { sampleData } from "./sampleData";
 
 const createEl = (tag, mainClass, ...className) => {
@@ -48,7 +47,8 @@ export const gGantt = {
                 "vstack",
                 "gap-2",
                 "overflow-auto",
-                "h-100"
+                "h-100",
+                "position-relative"
             ),
             grad: {
                 wrap: createEl("div", "tick", "row", "g-0", "flex-nowrap"),
@@ -65,6 +65,21 @@ export const gGantt = {
                     return x;
                 }),
             },
+            timeline: (() => {
+                const el = createEl(
+                    "div",
+                    "timeline-wrap",
+                    "position-absolute",
+                    "h-100",
+                    "overflow-visible",
+                    "bg-warning",
+                    "opacity-75"
+                );
+                el.style.width = "2px";
+                el.style.transform = "-1px";
+                el.style.zIndex = 800;
+                return el;
+            })(),
         };
 
         lastMidnight = +new Date().setHours(0, 0, 0, 0);
@@ -93,7 +108,7 @@ export const gGantt = {
         };
 
         init = () => {
-            this.root.className = "row";
+            this.root.className = "row g-0";
             const fieldName = createEl("div", "field", "w-100", "fw-bold");
             fieldName.innerHTML = "데이터명";
             if (this.option.tickPosition === "bottom") {
@@ -101,11 +116,13 @@ export const gGantt = {
                 this.layout.grad.wrap.classList.add("order-last");
             }
 
+            this.layout.bars.append(this.layout.timeline);
             this.layout.labels.append(fieldName);
             this.layout.grad.wrap.append(...this.layout.grad.ticks);
             this.layout.bars.append(this.layout.grad.wrap);
             this.root.append(this.layout.labels, this.layout.bars);
             this.draw();
+            this.timeline();
         };
 
         createBar = (name, start, end) => {
@@ -279,6 +296,13 @@ export const gGantt = {
                     this.layout.labels.append(label);
                 });
             }
+        };
+
+        timeline = () => {
+            const currentTime = +new Date() - this.lastMidnight;
+            const timelinePos = (currentTime / this.dayTime) * 100;
+            console.log(currentTime, timelinePos);
+            this.layout.timeline.style.left = timelinePos + "%";
         };
     },
 };
