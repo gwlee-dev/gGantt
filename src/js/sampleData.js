@@ -1,6 +1,6 @@
 export const sampleData = [
     {
-        title: "끝난 업무 A~B",
+        title: "업무 A~B",
         id: "0",
         schedule: [
             {
@@ -18,7 +18,7 @@ export const sampleData = [
         ],
     },
     {
-        title: "어제시작 업무 C~E",
+        title: "업무 C~E",
         id: "1",
         schedule: [
             {
@@ -42,7 +42,7 @@ export const sampleData = [
         ],
     },
     {
-        title: "오늘시작 업무 F~G",
+        title: "업무 F~G",
         id: "2",
         schedule: [
             {
@@ -60,7 +60,7 @@ export const sampleData = [
         ],
     },
     {
-        title: "내일시작 업무 H~I",
+        title: "업무 H~I",
         id: "3",
         schedule: [
             {

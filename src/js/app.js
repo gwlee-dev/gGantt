@@ -94,7 +94,7 @@ export const gGantt = {
         };
 
         createBar = (name, start, end, labelTag) => {
-            const label = createEl(labelTag || "div", "label");
+            const label = createEl(labelTag || "div", "label", "w-100");
             label.innerHTML = name;
 
             const alreadyStarted = start < this.lastMidnight;
@@ -159,14 +159,15 @@ export const gGantt = {
                     const labelCollapse = createEl(
                         "div",
                         `item-${group.id}`,
-                        "collapse"
+                        "collapse",
+                        "w-100"
                     );
                     const objs = group.schedule.map((child) => {
                         const obj = this.createBar(
                             child.title,
                             +new Date(child.start),
                             +new Date(child.end),
-                            true
+                            "div"
                         );
                         return obj;
                     });
