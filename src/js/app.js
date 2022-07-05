@@ -69,7 +69,13 @@ export const gGantt = {
         nextMidnight = +new Date().setHours(24, 0, 0, 0);
         dayTime = 86400000;
         template = {
-            barWrap: createEl("div", "bar-wrap", "d-flex", "w-100"),
+            barWrap: createEl(
+                "div",
+                "bar-wrap",
+                "d-flex",
+                "w-100",
+                "position-relative"
+            ),
             barWrapInner: createEl("div", "bar-wrap", "d-flex", "w-100"),
             bar: createEl(
                 "div",
@@ -79,7 +85,8 @@ export const gGantt = {
                 "fw-bold",
                 "ps-2",
                 "bg-primary",
-                "text-truncate"
+                "text-truncate",
+                "position-absolute"
             ),
         };
 
@@ -99,8 +106,8 @@ export const gGantt = {
             this.draw();
         };
 
-        createBar = (name, start, end, id, labelTag) => {
-            const label = createEl(labelTag || "div", "label", "w-100");
+        createBar = (name, start, end) => {
+            const label = createEl("div", "label", "w-100");
             label.innerHTML = name;
 
             const alreadyStarted = start < this.lastMidnight;
@@ -112,15 +119,32 @@ export const gGantt = {
 
             const bar = this.template.bar.cloneNode();
 
-            !alreadyStarted && (bar.style.marginLeft = barStart + "%");
+            !alreadyStarted && (bar.style.left = barStart + "%");
             (alreadyStarted || beContinue) && bar.classList.remove("rounded");
             alreadyStarted && !beContinue && bar.classList.add("rounded-end");
             !alreadyStarted && beContinue && bar.classList.add("rounded-start");
-            bar.style.width = barDuring + "%";
+            bar.style.width = beContinue
+                ? 100 - barStart + "%"
+                : barDuring + "%";
             bar.innerHTML = name;
             const toStr = (date) => new Date(date).toLocaleString();
             const str = `${toStr(start)} ~ ${toStr(end)}`;
             this.option.showRange && bar.append(` ${str}`);
+
+            const tooltip = createEl("div", "tooltip", "position-absolute");
+            tooltip.setAttribute("data-bs-toggle", "tooltip");
+            tooltip.setAttribute("data-bs-trigger", "manual");
+            tooltip.setAttribute("title", str);
+            this.root.append(tooltip);
+
+            const instance = new window.bootstrap.Tooltip(tooltip);
+            bar.addEventListener("mousemove", () => {
+                instance.show();
+            });
+
+            bar.addEventListener("mouseleave", () => {
+                instance.hide();
+            });
 
             return { bar, label };
         };
@@ -141,9 +165,7 @@ export const gGantt = {
                     const obj = this.createBar(
                         child.title,
                         +new Date(child.start),
-                        +new Date(child.end),
-                        child.id,
-                        "div"
+                        +new Date(child.end)
                     );
                     obj.barWrap = this.template.barWrap.cloneNode();
                     obj.barWrap.append(obj.bar);
@@ -161,13 +183,11 @@ export const gGantt = {
                     const groupBar = this.createBar(
                         group.title,
                         earliest,
-                        latest,
-                        "button"
+                        latest
                     );
                     groupBar.barWrap = this.template.barWrap.cloneNode();
                     groupBar.barWrap.append(groupBar.bar);
 
-                    groupBar.label.classList.add("border-0", "m-0");
                     groupBar.label.setAttribute("data-bs-toggle", "collapse");
                     groupBar.label.setAttribute(
                         "data-bs-target",
@@ -224,30 +244,15 @@ export const gGantt = {
                         const obj = this.createBar(
                             child.title,
                             +new Date(child.start),
-                            +new Date(child.end),
-                            "div"
+                            +new Date(child.end)
                         );
-                        obj.barWrap = this.template.barWrap.cloneNode();
-                        obj.barWrap.classList.add(
-                            "position-absolute",
-                            "start-0",
-                            "top-50",
-                            "translate-middle-y"
-                        );
-                        obj.barWrap.append(obj.bar);
-                        return obj.barWrap;
+                        return obj.bar;
                     });
 
-                    const queue = createEl(
-                        "div",
-                        "queue",
-                        "w-100",
-                        "position-relative"
-                    );
-                    queue.innerHTML = "&nbsp;";
+                    const barWrap = this.template.barWrap.cloneNode();
+                    barWrap.append(...objs);
 
-                    queue.append(...objs);
-                    this.layout.bars.append(queue);
+                    this.layout.bars.append(barWrap);
                     this.layout.labels.append(label);
                 });
             }
@@ -258,7 +263,7 @@ export const gGantt = {
 const sampleEl = document.querySelector("#ggantt-sample");
 const test = new gGantt.Chart(sampleEl, sampleData, {
     autoInitialize: true, // default: true
-    displayMode: "queue", // default: "collapse"
+    displayMode: "queue", // default: "group"
     // tickPosition: "bottom", // default: null
     showRange: true, // default: true
 });

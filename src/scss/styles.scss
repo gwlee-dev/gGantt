@@ -1,0 +1,6 @@
+$ggantt-row-height: 1.5rem;
+
+.ggantt-label,
+.ggantt-bar-wrap {
+    height: $ggantt-row-height;
+}
