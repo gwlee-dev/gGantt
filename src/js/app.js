@@ -1,6 +1,7 @@
 import { sampleData } from "./sampleData";
 
 const createEl = (tag, mainClass, ...className) => {
+    console.log(mainClass, ...className);
     const element = document.createElement(tag);
     element.className = `ggantt-${mainClass}`;
     element.classList.add(...className);
@@ -12,6 +13,7 @@ export const gGantt = {
         option = {
             autoInitialize: true,
             displayMode: "group",
+            stackGap: 2,
             showRange: false,
             useTooltip: true,
             tooltipPlacement: "bottom",
@@ -26,63 +28,9 @@ export const gGantt = {
                 Object.keys(this.option).forEach((x) => {
                     x in userOption && (this.option[x] = userOption[x]);
                 });
+            this.prepare();
             this.option.autoInitialize && this.init(userOption);
         }
-
-        layout = {
-            labels: createEl(
-                "div",
-                "label-area",
-                "col-auto",
-                "col-lg-2",
-                "vstack",
-                "gap-2",
-                "flex-nowrap",
-                "h-100"
-            ),
-            divider: createEl("div", "divider", "bg-dark"),
-            bars: createEl(
-                "div",
-                "bar-area",
-                "col",
-                "col-10",
-                "vstack",
-                "gap-2",
-                "overflow-auto",
-                "h-100",
-                "position-relative"
-            ),
-            grad: {
-                wrap: createEl("div", "tick", "row", "g-0", "flex-nowrap"),
-                ticks: [...Array(24)].map((x, index) => {
-                    x = createEl(
-                        "div",
-                        "tick",
-                        "col",
-                        "text-end",
-                        "border-end",
-                        "pe-1"
-                    );
-                    x.innerHTML = index + 1;
-                    return x;
-                }),
-            },
-            timeline: (() => {
-                const el = createEl(
-                    "div",
-                    "timeline-wrap",
-                    "position-absolute",
-                    "h-100",
-                    "overflow-visible",
-                    "bg-warning",
-                    "opacity-75"
-                );
-                el.style.width = "2px";
-                el.style.transform = "-1px";
-                el.style.zIndex = 800;
-                return el;
-            })(),
-        };
 
         lastMidnight = +new Date().setHours(0, 0, 0, 0);
         nextMidnight = +new Date().setHours(24, 0, 0, 0);
@@ -107,6 +55,63 @@ export const gGantt = {
                 "text-truncate",
                 "position-absolute"
             ),
+        };
+
+        prepare = () => {
+            this.layout = {
+                labels: createEl(
+                    "div",
+                    "label-area",
+                    "col-auto",
+                    "col-lg-2",
+                    "vstack",
+                    `gap-${this.option.stackGap}`,
+                    "flex-nowrap",
+                    "h-100"
+                ),
+                divider: createEl("div", "divider", "bg-dark"),
+                bars: createEl(
+                    "div",
+                    "bar-area",
+                    "col",
+                    "col-10",
+                    "vstack",
+                    `gap-${this.option.stackGap}`,
+                    "overflow-auto",
+                    "h-100",
+                    "position-relative"
+                ),
+                grad: {
+                    wrap: createEl("div", "tick", "row", "g-0", "flex-nowrap"),
+                    ticks: [...Array(24)].map((x, index) => {
+                        x = createEl(
+                            "div",
+                            "tick",
+                            "col",
+                            "text-end",
+                            "border-end",
+                            "pe-1"
+                        );
+                        x.innerHTML = index + 1;
+                        return x;
+                    }),
+                },
+                timeline: (() => {
+                    const el = createEl(
+                        "div",
+                        "timeline-wrap",
+                        "position-absolute",
+                        "h-100",
+                        "overflow-visible",
+                        "bg-warning",
+                        "opacity-75"
+                    );
+                    el.style.width = "2px";
+                    el.style.transform = "-1px";
+                    el.style.zIndex = 800;
+                    return el;
+                })(),
+            };
         };
 
         init = () => {
@@ -250,18 +255,33 @@ export const gGantt = {
                         `item-${group.id}`,
                         "collapse"
                     );
+                    const barCollapseInner = createEl(
+                        "div",
+                        "collapse-inner",
+                        "vstack",
+                        `gap-${this.option.stackGap}`
+                    );
                     const labelCollapse = createEl(
                         "div",
                         `item-${group.id}`,
                         "collapse",
                         "w-100"
                     );
+                    const labelCollapseInner = createEl(
+                        "div",
+                        "collapse-inner",
+                        "vstack",
+                        `gap-${this.option.stackGap}`
+                    );
                     const objs = getChild(group.schedule);
                     const bars = objs.map((x) => x.barWrap);
                     const labels = objs.map((x) => x.label);
 
-                    barCollapse.append(...bars);
-                    labelCollapse.append(...labels);
+                    barCollapseInner.append(...bars);
+                    labelCollapseInner.append(...labels);
+
+                    barCollapse.append(barCollapseInner);
+                    labelCollapse.append(labelCollapseInner);
 
                     this.layout.bars.append(barCollapse);
                     this.layout.labels.append(labelCollapse);
@@ -318,6 +338,7 @@ const sampleEl = document.querySelector("#ggantt-sample");
 const test = new gGantt.Chart(sampleEl, sampleData, {
     autoInitialize: true, // default: true
     displayMode: "queue", // default: "group"
+    stackGap: 2, // default: 2
     tickPosition: "bottom", // default: null
     // showRange: true, // default: false
     // useTooltip: true, // default: true
