@@ -27,7 +27,6 @@ export const gGantt = {
                 Object.keys(this.option).forEach((x) => {
                     x in userOption && (this.option[x] = userOption[x]);
                 });
-            this.prepare();
             this.option.autoInitialize && this.init(userOption);
         }
 
@@ -39,7 +38,7 @@ export const gGantt = {
             bar: createEl("div", "bar", "rounded"),
         };
 
-        prepare = () => {
+        init = () => {
             this.layout = {
                 labels: createEl(
                     "div",
@@ -74,9 +73,7 @@ export const gGantt = {
                 },
                 workspace: createEl("div", "workspace"),
             };
-        };
 
-        init = () => {
             this.root.className = "row g-0 flex-nowrap";
             const fieldName = createEl("div", "field");
             fieldName.innerHTML = "데이터명";
@@ -125,85 +122,6 @@ export const gGantt = {
                 this.root.append(this.layout.divider.wrap);
             this.root.append(this.layout.bars);
 
-            this.draw();
-            this.option.useTimeline &&
-                (this.timeline() || setInterval(this.timeline, 1000));
-            this.option.useDivider && dividerFunc();
-        };
-
-        createBar = (name, start, end) => {
-            if (start > end) {
-                alert(name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다.");
-                return;
-            }
-
-            const label = createEl("div", "label");
-            label.innerHTML = name;
-
-            const alreadyStarted = start < this.lastMidnight;
-            const beContinue = end > this.nextMidnight;
-            let dueOffset = 0;
-            alreadyStarted && (dueOffset = this.lastMidnight - start);
-            const barDuring = ((end - start - dueOffset) / this.dayTime) * 100;
-            const barStart = ((start - this.lastMidnight) / this.dayTime) * 100;
-
-            const now = +new Date();
-            const done = end < now;
-            const queued = start > now;
-            const running = !done && !queued;
-
-            const bar = this.template.bar.cloneNode();
-
-            done && bar.classList.add("ggantt-done");
-            queued && bar.classList.add("ggantt-queued");
-            running && bar.classList.add("ggantt-running");
-
-            !alreadyStarted && (bar.style.left = barStart + "%");
-            (alreadyStarted || beContinue) && bar.classList.remove("rounded");
-            alreadyStarted && !beContinue && bar.classList.add("rounded-end");
-            !alreadyStarted && beContinue && bar.classList.add("rounded-start");
-            bar.style.width = beContinue
-                ? 100 - barStart + "%"
-                : barDuring + "%";
-            bar.innerHTML = name;
-            const toStr = (date) => new Date(date).toLocaleString();
-            const str = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
-            this.option.showRange && bar.append(` ${str}`);
-
-            if (this.option.useTooltip) {
-                const tooltipWrap = createEl("div", "tooltip");
-                const tooltip = createEl("div", "v-element");
-                tooltipWrap.append(tooltip);
-                this.layout.workspace.append(tooltipWrap);
-
-                const instance = new window.bootstrap.Tooltip(tooltip, {
-                    offset: "[10, 20]",
-                    trigger: "manual",
-                    placement: this.option.tooltipPlacement,
-                    container: this.layout.workspace,
-                    title: str,
-                });
-                bar.addEventListener("mouseenter", () => {
-                    instance.show();
-                });
-                bar.addEventListener(
-                    "mousemove",
-                    ({ clientX: x, clientY: y }) => {
-                        tooltipWrap.style.left = x + "px";
-                        tooltipWrap.style.top = y + "px";
-                        instance.update();
-                    }
-                );
-
-                bar.addEventListener("mouseleave", () => {
-                    instance.hide();
-                });
-            }
-
-            return { bar, label };
-        };
-
-        draw = () => {
             const data = this.data.filter((group) => {
                 const starts = group.schedule
                     .map((x) => +new Date(x.start))
@@ -327,12 +245,88 @@ export const gGantt = {
                     this.layout.labels.append(label);
                 });
             }
+
+            const timelineFunc = () => {
+                const currentTime = +new Date() - this.lastMidnight;
+                const timelinePos = (currentTime / this.dayTime) * 100;
+                this.layout.timeline.timeline.style.left = timelinePos + "%";
+            };
+
+            this.option.useTimeline &&
+                (timelineFunc() || setInterval(this.timeline, 1000));
+            this.option.useDivider && dividerFunc();
         };
 
-        timeline = () => {
-            const currentTime = +new Date() - this.lastMidnight;
-            const timelinePos = (currentTime / this.dayTime) * 100;
-            this.layout.timeline.timeline.style.left = timelinePos + "%";
+        createBar = (name, start, end) => {
+            if (start > end) {
+                alert(name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다.");
+                return;
+            }
+
+            const label = createEl("div", "label");
+            label.innerHTML = name;
+
+            const alreadyStarted = start < this.lastMidnight;
+            const beContinue = end > this.nextMidnight;
+            let dueOffset = 0;
+            alreadyStarted && (dueOffset = this.lastMidnight - start);
+            const barDuring = ((end - start - dueOffset) / this.dayTime) * 100;
+            const barStart = ((start - this.lastMidnight) / this.dayTime) * 100;
+
+            const now = +new Date();
+            const done = end < now;
+            const queued = start > now;
+            const running = !done && !queued;
+
+            const bar = this.template.bar.cloneNode();
+
+            done && bar.classList.add("ggantt-done");
+            queued && bar.classList.add("ggantt-queued");
+            running && bar.classList.add("ggantt-running");
+
+            !alreadyStarted && (bar.style.left = barStart + "%");
+            (alreadyStarted || beContinue) && bar.classList.remove("rounded");
+            alreadyStarted && !beContinue && bar.classList.add("rounded-end");
+            !alreadyStarted && beContinue && bar.classList.add("rounded-start");
+            bar.style.width = beContinue
+                ? 100 - barStart + "%"
+                : barDuring + "%";
+            bar.innerHTML = name;
+            const toStr = (date) => new Date(date).toLocaleString();
+            const str = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
+            this.option.showRange && bar.append(` ${str}`);
+
+            if (this.option.useTooltip) {
+                const tooltipWrap = createEl("div", "tooltip");
+                const tooltip = createEl("div", "v-element");
+                tooltipWrap.append(tooltip);
+                this.layout.workspace.append(tooltipWrap);
+
+                const instance = new window.bootstrap.Tooltip(tooltip, {
+                    offset: "[10, 20]",
+                    trigger: "manual",
+                    placement: this.option.tooltipPlacement,
+                    container: this.layout.workspace,
+                    title: str,
+                });
+                bar.addEventListener("mouseenter", () => {
+                    instance.show();
+                });
+                bar.addEventListener(
+                    "mousemove",
+                    ({ clientX: x, clientY: y }) => {
+                        tooltipWrap.style.left = x + "px";
+                        tooltipWrap.style.top = y + "px";
+                        instance.update();
+                    }
+                );
+
+                bar.addEventListener("mouseleave", () => {
+                    instance.hide();
+                });
+            }
+
+            return { bar, label };
         };
     },
 };
