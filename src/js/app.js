@@ -172,7 +172,7 @@ export const gGantt = {
 
             if (this.option.useTooltip) {
                 const tooltipWrap = createEl("div", "tooltip");
-                const tooltip = createEl("div", "position-relative");
+                const tooltip = createEl("div", "v-element");
                 tooltip.setAttribute("data-bs-toggle", "tooltip");
                 tooltip.setAttribute(
                     "data-bs-placement",
