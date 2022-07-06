@@ -6,6 +6,38 @@ $ggantt-blink-opacity: 75%;
     height: $ggantt-row-height;
 }
 
+.ggantt-bar-wrap {
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+
+.ggantt-label-area {
+    height: 100%;
+    flex-wrap: nowrap;
+}
+
+.ggantt-bar-area {
+    height: 100%;
+    position: relative;
+    overflow: auto;
+}
+
+.ggantt-bar {
+    color: var(--bs-white);
+    font-weight: 700;
+    position: absolute;
+    padding-left: 0.5rem;
+}
+
+.ggantt-bar,
+.ggantt-label,
+.ggantt-tick {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .ggantt-running {
     background-color: var(--bs-primary);
     animation: blink ease-out 2s infinite;
@@ -31,21 +63,48 @@ $ggantt-blink-opacity: 75%;
     opacity: 50%;
 }
 
-.ggantt-timeline-wrap,
-.ggantt-tick-wrap,
-.ggantt-bar-wrap {
-    min-width: 43rem;
+.ggantt-timeline-wrap {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.ggantt-timeline-inner {
+    position: relative;
+    height: 100%;
+    width: 100%;
 }
 
 .ggantt-timeline {
     width: 2px;
     transform: translateX(-1px);
+    position: absolute;
+    height: 100%;
+    background-color: var(--bs-warning);
+    opacity: 0.75;
+}
+
+.ggantt-timeline-wrap,
+.ggantt-tick-wrap,
+.ggantt-bar-wrap {
+    min-width: 43rem;
+    width: 100%;
+}
+
+.ggantt-tick {
+    text-align: right;
+    padding-right: 0.25rem;
+    border-right: var(--bs-border-width) var(--bs-border-style)
+        var(--bs-border-color);
 }
 
 .ggantt-divider-wrap {
     .ggantt-divider {
         width: 3px;
         transition: transform ease-in-out 0.1s;
+        background-color: var(--bs-secondary);
+        opacity: 0.5;
+        height: 100%;
     }
     &:hover {
         .ggantt-divider {
@@ -53,4 +112,12 @@ $ggantt-blink-opacity: 75%;
             cursor: col-resize;
         }
     }
+}
+
+.ggantt-field {
+    font-weight: 700;
+}
+
+.ggantt-tooltip {
+    position: absolute;
 }

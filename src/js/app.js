@@ -37,24 +37,8 @@ export const gGantt = {
         nextMidnight = +new Date().setHours(24, 0, 0, 0);
         dayTime = 86400000;
         template = {
-            barWrap: createEl(
-                "div",
-                "bar-wrap",
-                "d-flex",
-                "w-100",
-                "position-relative"
-            ),
-            barWrapInner: createEl("div", "bar-wrap", "d-flex", "w-100"),
-            bar: createEl(
-                "div",
-                "bar",
-                "rounded",
-                "text-white",
-                "fw-bold",
-                "ps-2",
-                "text-truncate",
-                "position-absolute"
-            ),
+            barWrap: createEl("div", "bar-wrap"),
+            bar: createEl("div", "bar", "rounded"),
         };
 
         prepare = () => {
@@ -64,82 +48,42 @@ export const gGantt = {
                     "label-area",
                     "col-auto",
                     "vstack",
-                    `gap-${this.option.stackGap}`,
-                    "flex-nowrap",
-                    "h-100"
+                    `gap-${this.option.stackGap}`
                 ),
                 divider: {
                     wrap: createEl("div", "divider-wrap", "col-auto"),
-                    divider: createEl(
-                        "div",
-                        "divider",
-                        "col-auto",
-                        "bg-secondary",
-                        "opacity-50",
-                        "h-100",
-                        "mx-1"
-                    ),
+                    divider: createEl("div", "divider", "col-auto", "mx-1"),
                 },
                 bars: createEl(
                     "div",
                     "bar-area",
                     "col-10",
                     "vstack",
-                    `gap-${this.option.stackGap}`,
-                    "h-100",
-                    "position-relative",
-                    "overflow-auto"
+                    `gap-${this.option.stackGap}`
                 ),
-                grad: {
-                    wrap: createEl("div", "tick-wrap", "row", "g-0", "w-100"),
+                tick: {
+                    wrap: createEl("div", "tick-wrap", "row", "g-0"),
                     ticks: [...Array(24)].map((x, index) => {
-                        x = createEl(
-                            "div",
-                            "tick",
-                            "col",
-                            "text-end",
-                            "border-end",
-                            "pe-1",
-                            "text-truncate"
-                        );
+                        x = createEl("div", "tick", "col");
                         x.innerHTML = index + 1;
                         return x;
                     }),
                 },
                 timeline: {
-                    wrap: createEl(
-                        "div",
-                        "timeline-wrap",
-                        "position-absolute",
-                        "h-100",
-                        "w-100"
-                    ),
-                    inner: createEl(
-                        "div",
-                        "timeline-inner",
-                        "w-100",
-                        "h-100",
-                        "position-relative"
-                    ),
-                    timeline: createEl(
-                        "div",
-                        "timeline",
-                        "position-absolute",
-                        "h-100",
-                        "bg-warning",
-                        "opacity-75"
-                    ),
+                    wrap: createEl("div", "timeline-wrap"),
+                    inner: createEl("div", "timeline-inner"),
+                    timeline: createEl("div", "timeline"),
                 },
             };
         };
 
         init = () => {
             this.root.className = "row g-0 flex-nowrap";
-            const fieldName = createEl("div", "field", "fw-bold");
+            const fieldName = createEl("div", "field");
             fieldName.innerHTML = "데이터명";
             if (this.option.tickPositionBottom) {
                 fieldName.classList.add("order-last");
-                this.layout.grad.wrap.classList.add("order-last");
+                this.layout.tick.wrap.classList.add("order-last");
             }
 
             this.layout.divider.wrap.append(this.layout.divider.divider);
@@ -174,8 +118,8 @@ export const gGantt = {
             this.layout.timeline.wrap.append(this.layout.timeline.timeline);
             this.layout.bars.append(this.layout.timeline.wrap);
             this.layout.labels.append(fieldName);
-            this.layout.grad.wrap.append(...this.layout.grad.ticks);
-            this.layout.bars.append(this.layout.grad.wrap);
+            this.layout.tick.wrap.append(...this.layout.tick.ticks);
+            this.layout.bars.append(this.layout.tick.wrap);
             this.root.append(this.layout.labels);
             this.option.useDivider &&
                 this.root.append(this.layout.divider.wrap);
@@ -227,11 +171,7 @@ export const gGantt = {
             this.option.showRange && bar.append(` ${str}`);
 
             if (this.option.useTooltip) {
-                const tooltipWrap = createEl(
-                    "div",
-                    "tooltip",
-                    "position-absolute"
-                );
+                const tooltipWrap = createEl("div", "tooltip");
                 const tooltip = createEl("div", "position-relative");
                 tooltip.setAttribute("data-bs-toggle", "tooltip");
                 tooltip.setAttribute(
@@ -330,8 +270,7 @@ export const gGantt = {
                     const labelCollapse = createEl(
                         "div",
                         `item-${group.id}`,
-                        "collapse",
-                        "w-100"
+                        "collapse"
                     );
                     const labelCollapseInner = createEl(
                         "div",
@@ -356,7 +295,7 @@ export const gGantt = {
 
             if (this.option.displayMode === "separated") {
                 data.forEach((group) => {
-                    const label = createEl("div", "label", "w-100");
+                    const label = createEl("div", "label");
                     label.innerHTML = group.title;
 
                     const objs = getChild(group.schedule);
@@ -371,7 +310,7 @@ export const gGantt = {
 
             if (this.option.displayMode === "queue") {
                 data.forEach((group) => {
-                    const label = createEl("div", "label", "w-100");
+                    const label = createEl("div", "label");
                     label.innerHTML = group.title;
 
                     const objs = group.schedule.map((child) => {

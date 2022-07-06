@@ -1,20 +1,20 @@
 extends ../layout/base
 
 block contents
-    .px-5.mt-4.vstack.gap-3
+    .px-5.mt-1.mb-2.vstack.gap-3
         .card 
             .card-header.hstack.justify-content-between
-                span gGantt (displayMode: queue)
+                span displayMode: queue
             .card-body
                 #ggantt-queue.ggantt
         .card 
             .card-header.hstack.justify-content-between
-                span gGantt (displayMode: group)
+                span displayMode: group
             .card-body
                 #ggantt-group.ggantt
         .card 
             .card-header.hstack.justify-content-between
-                span gGantt (displayMode: separated)
+                span displayMode: separated
             .card-body
                 #ggantt-separated.ggantt
 

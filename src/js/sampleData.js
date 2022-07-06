@@ -24,7 +24,7 @@ export const sampleData = [
             {
                 title: "일정 C",
                 id: "1A",
-                start: "2022-07-06 01:00:00",
+                start: "2022-07-06 00:00:00",
                 end: "2022-07-06 04:00:00",
             },
             {
