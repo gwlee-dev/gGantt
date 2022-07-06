@@ -15,6 +15,7 @@ export const gGantt = {
             showRange: false,
             useTooltip: true,
             tooltipPlacement: "bottom",
+            useTimeline: true,
         };
 
         constructor(root, data, userOption) {
@@ -32,13 +33,14 @@ export const gGantt = {
             labels: createEl(
                 "div",
                 "label-area",
-                "col",
-                "col-2",
+                "col-auto",
+                "col-lg-2",
                 "vstack",
                 "gap-2",
                 "flex-nowrap",
                 "h-100"
             ),
+            divider: createEl("div", "divider", "bg-dark"),
             bars: createEl(
                 "div",
                 "bar-area",
@@ -108,7 +110,7 @@ export const gGantt = {
         };
 
         init = () => {
-            this.root.className = "row g-0";
+            this.root.className = "row g-0 flex-nowrap";
             const fieldName = createEl("div", "field", "w-100", "fw-bold");
             fieldName.innerHTML = "데이터명";
             if (this.option.tickPosition === "bottom") {
@@ -122,11 +124,17 @@ export const gGantt = {
             this.layout.bars.append(this.layout.grad.wrap);
             this.root.append(this.layout.labels, this.layout.bars);
             this.draw();
-            this.timeline();
+            this.option.useTimeline &&
+                (this.timeline() || setInterval(this.timeline, 1000));
         };
 
         createBar = (name, start, end) => {
-            const label = createEl("div", "label", "w-100");
+            if (start > end) {
+                alert(name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다.");
+                return;
+            }
+
+            const label = createEl("div", "label", "me-auto");
             label.innerHTML = name;
 
             const alreadyStarted = start < this.lastMidnight;
@@ -301,7 +309,6 @@ export const gGantt = {
         timeline = () => {
             const currentTime = +new Date() - this.lastMidnight;
             const timelinePos = (currentTime / this.dayTime) * 100;
-            console.log(currentTime, timelinePos);
             this.layout.timeline.style.left = timelinePos + "%";
         };
     },
@@ -315,6 +322,7 @@ const test = new gGantt.Chart(sampleEl, sampleData, {
     // showRange: true, // default: false
     // useTooltip: true, // default: true
     // tooltipPlacement: "top", // default: bottom
+    // useTimeline: true, // default: true
 });
 
 (() => {
