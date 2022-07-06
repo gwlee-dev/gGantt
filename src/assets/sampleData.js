@@ -1,4 +1,4 @@
-export const sampleData = [
+window.sampleData = [
     {
         title: "일정그룹 A~B",
         id: "0",

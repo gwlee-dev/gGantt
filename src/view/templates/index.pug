@@ -22,8 +22,13 @@ block contents
             .card-header.hstack.justify-content-between
                 span Usage
             .card-body 
-                span.d-block const queue = new gGantt.Chart(rootElement, Data, Options)
+                span.d-block const chartObj = new gGantt.Chart(rootElement, Data, Options)
 
+        .card
+            .card-header.hstack.justify-content-between
+                span Method
+            .card-body 
+                span.d-block chartObj.init() // initialize chart
         .card
             .card-header.hstack.justify-content-between
                 span Options
@@ -37,3 +42,10 @@ block contents
                 span.d-block tooltipPlacement: "top", // default: bottom
                 span.d-block useTimeline: true, // default: true
                 span.d-block useDivider: true, // default: true
+
+block scripts
+    script(src="/static/assets/sampleData.js") 
+    script.
+        const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, { displayMode: "queue" });
+        const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData);
+        const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, { displayMode: "separated" });

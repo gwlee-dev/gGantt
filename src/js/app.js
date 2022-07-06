@@ -1,5 +1,3 @@
-import { sampleData } from "./sampleData";
-
 const createEl = (tag, mainClass, ...className) => {
     const element = document.createElement(tag);
     element.className = `ggantt-${mainClass}`;
@@ -74,6 +72,7 @@ export const gGantt = {
                     inner: createEl("div", "timeline-inner"),
                     timeline: createEl("div", "timeline"),
                 },
+                workspace: createEl("div", "workspace"),
             };
         };
 
@@ -115,6 +114,7 @@ export const gGantt = {
                 });
             };
 
+            document.body.append(this.layout.workspace);
             this.layout.timeline.wrap.append(this.layout.timeline.timeline);
             this.layout.bars.append(this.layout.timeline.wrap);
             this.layout.labels.append(fieldName);
@@ -173,18 +173,16 @@ export const gGantt = {
             if (this.option.useTooltip) {
                 const tooltipWrap = createEl("div", "tooltip");
                 const tooltip = createEl("div", "v-element");
-                tooltip.setAttribute("data-bs-toggle", "tooltip");
-                tooltip.setAttribute(
-                    "data-bs-placement",
-                    this.option.tooltipPlacement
-                );
-                tooltip.setAttribute("data-bs-offset", "[10, 20]");
-                tooltip.setAttribute("data-bs-trigger", "manual");
-                tooltip.setAttribute("title", str);
                 tooltipWrap.append(tooltip);
-                document.body.append(tooltipWrap);
+                this.layout.workspace.append(tooltipWrap);
 
-                const instance = new window.bootstrap.Tooltip(tooltip);
+                const instance = new window.bootstrap.Tooltip(tooltip, {
+                    offset: "[10, 20]",
+                    trigger: "manual",
+                    placement: this.option.tooltipPlacement,
+                    container: this.layout.workspace,
+                    title: str,
+                });
                 bar.addEventListener("mouseenter", () => {
                     instance.show();
                 });
@@ -339,25 +337,5 @@ export const gGantt = {
     },
 };
 
-const queue = new gGantt.Chart(
-    document.querySelector("#ggantt-queue"),
-    sampleData,
-    { displayMode: "queue" }
-);
-
-const group = new gGantt.Chart(
-    document.querySelector("#ggantt-group"),
-    sampleData
-);
-
-const separated = new gGantt.Chart(
-    document.querySelector("#ggantt-separated"),
-    sampleData,
-    { displayMode: "separated" }
-);
-
-(() => {
-    window.gGantt = gGantt;
-    window.sample = { queue, group, separated };
-})();
+window.gGantt = gGantt;
 export default gGantt;
