@@ -1,7 +1,6 @@
 import { sampleData } from "./sampleData";
 
 const createEl = (tag, mainClass, ...className) => {
-    console.log(mainClass, ...className);
     const element = document.createElement(tag);
     element.className = `ggantt-${mainClass}`;
     element.classList.add(...className);
@@ -14,6 +13,7 @@ export const gGantt = {
             autoInitialize: true,
             displayMode: "group",
             stackGap: 2,
+            tickPositionBottom: false,
             showRange: false,
             useTooltip: true,
             tooltipPlacement: "bottom",
@@ -63,17 +63,26 @@ export const gGantt = {
                     "div",
                     "label-area",
                     "col-auto",
-                    "col-lg-2",
                     "vstack",
                     `gap-${this.option.stackGap}`,
                     "flex-nowrap",
                     "h-100"
                 ),
-                divider: createEl("div", "divider", "bg-dark"),
+                divider: {
+                    wrap: createEl("div", "divider-wrap", "col-auto"),
+                    divider: createEl(
+                        "div",
+                        "divider",
+                        "col-auto",
+                        "bg-secondary",
+                        "opacity-50",
+                        "h-100",
+                        "mx-1"
+                    ),
+                },
                 bars: createEl(
                     "div",
                     "bar-area",
-                    "col",
                     "col-10",
                     "vstack",
                     `gap-${this.option.stackGap}`,
@@ -116,18 +125,48 @@ export const gGantt = {
 
         init = () => {
             this.root.className = "row g-0 flex-nowrap";
-            const fieldName = createEl("div", "field", "w-100", "fw-bold");
+            const fieldName = createEl("div", "field", "fw-bold");
             fieldName.innerHTML = "데이터명";
-            if (this.option.tickPosition === "bottom") {
+            if (this.option.tickPositionBottom) {
                 fieldName.classList.add("order-last");
                 this.layout.grad.wrap.classList.add("order-last");
             }
+
+            this.layout.divider.divider.style.width = "3px";
+            this.layout.divider.wrap.append(this.layout.divider.divider);
+            this.layout.divider.wrap.setAttribute("role", "button");
+
+            const mousemoveEvent = ({ clientX }) => {
+                const { x: rootX, width } = this.root.getBoundingClientRect();
+                const ratio = {
+                    label: clientX - rootX,
+                    bar: width - clientX + rootX,
+                };
+                this.layout.labels.style.width =
+                    ((ratio.label - 3) / width) * 100 + "%";
+                this.layout.bars.style.width = (ratio.bar / width) * 100 + "%";
+
+                console.log(ratio);
+            };
+
+            this.layout.divider.wrap.addEventListener("mousedown", () => {
+                this.root.style.userSelect = "none";
+                this.root.addEventListener("mousemove", mousemoveEvent);
+                this.root.addEventListener("mouseup", () => {
+                    this.root.style.userSelect = "";
+                    this.root.removeEventListener("mousemove", mousemoveEvent);
+                });
+            });
 
             this.layout.bars.append(this.layout.timeline);
             this.layout.labels.append(fieldName);
             this.layout.grad.wrap.append(...this.layout.grad.ticks);
             this.layout.bars.append(this.layout.grad.wrap);
-            this.root.append(this.layout.labels, this.layout.bars);
+            this.root.append(
+                this.layout.labels,
+                this.layout.divider.wrap,
+                this.layout.bars
+            );
             this.draw();
             this.option.useTimeline &&
                 (this.timeline() || setInterval(this.timeline, 1000));
@@ -139,7 +178,7 @@ export const gGantt = {
                 return;
             }
 
-            const label = createEl("div", "label", "me-auto");
+            const label = createEl("div", "label");
             label.innerHTML = name;
 
             const alreadyStarted = start < this.lastMidnight;
@@ -241,11 +280,14 @@ export const gGantt = {
                     groupBar.barWrap = this.template.barWrap.cloneNode();
                     groupBar.barWrap.append(groupBar.bar);
 
-                    groupBar.label.setAttribute("data-bs-toggle", "collapse");
-                    groupBar.label.setAttribute(
-                        "data-bs-target",
-                        `.ggantt-item-${group.id}`
-                    );
+                    [groupBar.label, groupBar.barWrap].forEach((x) => {
+                        x.setAttribute("data-bs-toggle", "collapse");
+                        x.setAttribute(
+                            "data-bs-target",
+                            `.ggantt-item-${group.id}`
+                        );
+                        x.setAttribute("role", "button");
+                    });
 
                     this.layout.bars.append(groupBar.barWrap);
                     this.layout.labels.append(groupBar.label);
@@ -336,10 +378,10 @@ export const gGantt = {
 
 const sampleEl = document.querySelector("#ggantt-sample");
 const test = new gGantt.Chart(sampleEl, sampleData, {
-    autoInitialize: true, // default: true
+    // autoInitialize: true, // default: true
     displayMode: "queue", // default: "group"
-    stackGap: 2, // default: 2
-    tickPosition: "bottom", // default: null
+    // stackGap: 4, // default: 2
+    // tickPositionBottom: true, // default: false
     // showRange: true, // default: false
     // useTooltip: true, // default: true
     // tooltipPlacement: "top", // default: bottom
