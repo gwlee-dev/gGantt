@@ -1,9 +1,39 @@
 extends ../layout/base
 
 block contents
-    .px-5.mt-4
+    .px-5.mt-4.vstack.gap-3
         .card 
             .card-header.hstack.justify-content-between
-                span gGantt
+                span gGantt (displayMode: queue)
             .card-body
-                #ggantt-sample.ggantt
+                #ggantt-queue.ggantt
+        .card 
+            .card-header.hstack.justify-content-between
+                span gGantt (displayMode: group)
+            .card-body
+                #ggantt-group.ggantt
+        .card 
+            .card-header.hstack.justify-content-between
+                span gGantt (displayMode: separated)
+            .card-body
+                #ggantt-separated.ggantt
+
+        .card
+            .card-header.hstack.justify-content-between
+                span Usage
+            .card-body 
+                span.d-block const queue = new gGantt.Chart(rootElement, Data, Options)
+
+        .card
+            .card-header.hstack.justify-content-between
+                span Options
+            .card-body 
+                span.d-block autoInitialize: true, // default: true
+                span.d-block displayMode: "queue", // default: "group"
+                span.d-block stackGap: 4, // default: 2
+                span.d-block tickPositionBottom: true, // default: false
+                span.d-block showRange: true, // default: false
+                span.d-block useTooltip: true, // default: true
+                span.d-block tooltipPlacement: "top", // default: bottom
+                span.d-block useTimeline: true, // default: true
+                span.d-block useDivider: true, // default: true

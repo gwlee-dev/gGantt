@@ -52,7 +52,6 @@ export const gGantt = {
                 "text-white",
                 "fw-bold",
                 "ps-2",
-                "bg-primary",
                 "text-truncate",
                 "position-absolute"
             ),
@@ -87,12 +86,12 @@ export const gGantt = {
                     "col-10",
                     "vstack",
                     `gap-${this.option.stackGap}`,
-                    "overflow-auto",
                     "h-100",
-                    "position-relative"
+                    "position-relative",
+                    "overflow-auto"
                 ),
                 grad: {
-                    wrap: createEl("div", "tick", "row", "g-0", "flex-nowrap"),
+                    wrap: createEl("div", "tick-wrap", "row", "g-0", "w-100"),
                     ticks: [...Array(24)].map((x, index) => {
                         x = createEl(
                             "div",
@@ -100,27 +99,37 @@ export const gGantt = {
                             "col",
                             "text-end",
                             "border-end",
-                            "pe-1"
+                            "pe-1",
+                            "text-truncate"
                         );
                         x.innerHTML = index + 1;
                         return x;
                     }),
                 },
-                timeline: (() => {
-                    const el = createEl(
+                timeline: {
+                    wrap: createEl(
                         "div",
                         "timeline-wrap",
                         "position-absolute",
                         "h-100",
-                        "overflow-visible",
+                        "w-100"
+                    ),
+                    inner: createEl(
+                        "div",
+                        "timeline-inner",
+                        "w-100",
+                        "h-100",
+                        "position-relative"
+                    ),
+                    timeline: createEl(
+                        "div",
+                        "timeline",
+                        "position-absolute",
+                        "h-100",
                         "bg-warning",
                         "opacity-75"
-                    );
-                    el.style.width = "2px";
-                    el.style.transform = "-1px";
-                    el.style.zIndex = 800;
-                    return el;
-                })(),
+                    ),
+                },
             };
         };
 
@@ -133,9 +142,7 @@ export const gGantt = {
                 this.layout.grad.wrap.classList.add("order-last");
             }
 
-            this.layout.divider.divider.style.width = "3px";
             this.layout.divider.wrap.append(this.layout.divider.divider);
-            this.layout.divider.wrap.setAttribute("role", "button");
 
             const dividerFunc = () => {
                 const mousemoveEvent = ({ clientX }) => {
@@ -164,7 +171,8 @@ export const gGantt = {
                 });
             };
 
-            this.layout.bars.append(this.layout.timeline);
+            this.layout.timeline.wrap.append(this.layout.timeline.timeline);
+            this.layout.bars.append(this.layout.timeline.wrap);
             this.layout.labels.append(fieldName);
             this.layout.grad.wrap.append(...this.layout.grad.ticks);
             this.layout.bars.append(this.layout.grad.wrap);
@@ -195,7 +203,16 @@ export const gGantt = {
             const barDuring = ((end - start - dueOffset) / this.dayTime) * 100;
             const barStart = ((start - this.lastMidnight) / this.dayTime) * 100;
 
+            const now = +new Date();
+            const done = end < now;
+            const queued = start > now;
+            const running = !done && !queued;
+
             const bar = this.template.bar.cloneNode();
+
+            done && bar.classList.add("ggantt-done");
+            queued && bar.classList.add("ggantt-queued");
+            running && bar.classList.add("ggantt-running");
 
             !alreadyStarted && (bar.style.left = barStart + "%");
             (alreadyStarted || beContinue) && bar.classList.remove("rounded");
@@ -337,7 +354,7 @@ export const gGantt = {
                 });
             }
 
-            if (this.option.displayMode === "several") {
+            if (this.option.displayMode === "separated") {
                 data.forEach((group) => {
                     const label = createEl("div", "label", "w-100");
                     label.innerHTML = group.title;
@@ -378,26 +395,30 @@ export const gGantt = {
         timeline = () => {
             const currentTime = +new Date() - this.lastMidnight;
             const timelinePos = (currentTime / this.dayTime) * 100;
-            this.layout.timeline.style.left = timelinePos + "%";
+            this.layout.timeline.timeline.style.left = timelinePos + "%";
         };
     },
 };
 
-const sampleEl = document.querySelector("#ggantt-sample");
-const test = new gGantt.Chart(sampleEl, sampleData, {
-    // autoInitialize: true, // default: true
-    displayMode: "queue", // default: "group"
-    // stackGap: 4, // default: 2
-    // tickPositionBottom: true, // default: false
-    // showRange: true, // default: false
-    // useTooltip: true, // default: true
-    // tooltipPlacement: "top", // default: bottom
-    // useTimeline: true, // default: true
-    // useDivider: true, // default: true
-});
+const queue = new gGantt.Chart(
+    document.querySelector("#ggantt-queue"),
+    sampleData,
+    { displayMode: "queue" }
+);
+
+const group = new gGantt.Chart(
+    document.querySelector("#ggantt-group"),
+    sampleData
+);
+
+const separated = new gGantt.Chart(
+    document.querySelector("#ggantt-separated"),
+    sampleData,
+    { displayMode: "separated" }
+);
 
 (() => {
     window.gGantt = gGantt;
-    window.test = test;
+    window.sample = { queue, group, separated };
 })();
 export default gGantt;

@@ -14,7 +14,7 @@ app.use(express.json());
 app.use("/static", express.static(DEST));
 app.use("/", rootRouter);
 app.all("*", (req, res) => {
-    res.status(404).render("error/404");
+    res.status(404).send("error/404");
 });
 
 export default app;

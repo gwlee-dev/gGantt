@@ -1,6 +1,56 @@
 $ggantt-row-height: 1.5rem;
+$ggantt-blink-opacity: 75%;
 
 .ggantt-label,
 .ggantt-bar-wrap {
     height: $ggantt-row-height;
+}
+
+.ggantt-running {
+    background-color: var(--bs-primary);
+    animation: blink ease-out 2s infinite;
+    @keyframes blink {
+        0% {
+            opacity: 100%;
+        }
+        50% {
+            opacity: $ggantt-blink-opacity;
+        }
+        100% {
+            opacity: 100%;
+        }
+    }
+}
+
+.ggantt-queued {
+    background-color: var(--bs-secondary);
+}
+
+.ggantt-done {
+    background-color: var(--bs-success);
+    opacity: 50%;
+}
+
+.ggantt-timeline-wrap,
+.ggantt-tick-wrap,
+.ggantt-bar-wrap {
+    min-width: 43rem;
+}
+
+.ggantt-timeline {
+    width: 2px;
+    transform: translateX(-1px);
+}
+
+.ggantt-divider-wrap {
+    .ggantt-divider {
+        width: 3px;
+        transition: transform ease-in-out 0.1s;
+    }
+    &:hover {
+        .ggantt-divider {
+            transform: scaleX(150%);
+            cursor: col-resize;
+        }
+    }
 }
