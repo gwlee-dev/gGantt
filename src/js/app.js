@@ -18,6 +18,7 @@ export const gGantt = {
             useTooltip: true,
             tooltipPlacement: "bottom",
             useTimeline: true,
+            useDivider: true,
         };
 
         constructor(root, data, userOption) {
@@ -136,40 +137,46 @@ export const gGantt = {
             this.layout.divider.wrap.append(this.layout.divider.divider);
             this.layout.divider.wrap.setAttribute("role", "button");
 
-            const mousemoveEvent = ({ clientX }) => {
-                const { x: rootX, width } = this.root.getBoundingClientRect();
-                const ratio = {
-                    label: clientX - rootX,
-                    bar: width - clientX + rootX,
+            const dividerFunc = () => {
+                const mousemoveEvent = ({ clientX }) => {
+                    const { x: rootX, width } =
+                        this.root.getBoundingClientRect();
+                    const ratio = {
+                        label: clientX - rootX,
+                        bar: width - clientX + rootX,
+                    };
+                    this.layout.labels.style.width =
+                        ((ratio.label - 3) / width) * 100 + "%";
+                    this.layout.bars.style.width =
+                        (ratio.bar / width) * 100 + "%";
                 };
-                this.layout.labels.style.width =
-                    ((ratio.label - 3) / width) * 100 + "%";
-                this.layout.bars.style.width = (ratio.bar / width) * 100 + "%";
 
-                console.log(ratio);
-            };
-
-            this.layout.divider.wrap.addEventListener("mousedown", () => {
-                this.root.style.userSelect = "none";
-                this.root.addEventListener("mousemove", mousemoveEvent);
-                this.root.addEventListener("mouseup", () => {
-                    this.root.style.userSelect = "";
-                    this.root.removeEventListener("mousemove", mousemoveEvent);
+                this.layout.divider.wrap.addEventListener("mousedown", () => {
+                    this.root.style.userSelect = "none";
+                    document.addEventListener("mousemove", mousemoveEvent);
+                    document.addEventListener("mouseup", () => {
+                        this.root.style.userSelect = "";
+                        document.removeEventListener(
+                            "mousemove",
+                            mousemoveEvent
+                        );
+                    });
                 });
-            });
+            };
 
             this.layout.bars.append(this.layout.timeline);
             this.layout.labels.append(fieldName);
             this.layout.grad.wrap.append(...this.layout.grad.ticks);
             this.layout.bars.append(this.layout.grad.wrap);
-            this.root.append(
-                this.layout.labels,
-                this.layout.divider.wrap,
-                this.layout.bars
-            );
+            this.root.append(this.layout.labels);
+            this.option.useDivider &&
+                this.root.append(this.layout.divider.wrap);
+            this.root.append(this.layout.bars);
+
             this.draw();
             this.option.useTimeline &&
                 (this.timeline() || setInterval(this.timeline, 1000));
+            this.option.useDivider && dividerFunc();
         };
 
         createBar = (name, start, end) => {
@@ -386,6 +393,7 @@ const test = new gGantt.Chart(sampleEl, sampleData, {
     // useTooltip: true, // default: true
     // tooltipPlacement: "top", // default: bottom
     // useTimeline: true, // default: true
+    // useDivider: true, // default: true
 });
 
 (() => {
