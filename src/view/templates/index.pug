@@ -7,6 +7,7 @@ block contents
                 span displayMode: queue
             .card-body
                 #ggantt-queue.ggantt
+
         .card 
             .card-header.hstack.justify-content-between
                 span displayMode: group
@@ -29,7 +30,7 @@ block contents
                 span Method
             .card-body 
                 span.d-block chartObj.init() // initialize chart
-                span.d-block chartObj.createBar() // DOM element 반환 { bar, label } (필요시 직접 append)
+                span.d-block chartObj.createBar(name, start timestamp, end timestamp) // return DOM element
         .card
             .card-header.hstack.justify-content-between
                 span Options
@@ -47,6 +48,7 @@ block contents
 block scripts
     script(src="/static/assets/sampleData.js") 
     script.
-        const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, { displayMode: "queue" });
+        const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, { displayMode: "queue", tooltipTemplate: tooltipTemplateSample });
         const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData);
         const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, { displayMode: "separated" });
+        console.log(queue.option.tooltipTemplate);

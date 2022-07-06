@@ -17,6 +17,7 @@ export const gGantt = {
             tooltipPlacement: "bottom",
             useTimeline: true,
             useDivider: true,
+            tooltipTemplate: false,
         };
 
         constructor(root, data, userOption) {
@@ -302,12 +303,46 @@ export const gGantt = {
                 tooltipWrap.append(tooltip);
                 this.layout.workspace.append(tooltipWrap);
 
+                const bindData = this.option.tooltipTemplate
+                    ? () => {
+                          let newData = this.option.tooltipTemplate;
+                          const guide = {
+                              title: name,
+                              start,
+                              startDate: new Date(start).toLocaleDateString(),
+                              startYear: new Date(start).getFullYear(),
+                              startMonth: new Date(start).getMonth() + 1,
+                              startDay: new Date(start).getDay(),
+                              startTime: new Date(start).getTime(),
+                              startHour: new Date(start).getHours(),
+                              startMinute: new Date(start).getMinutes(),
+                              startSecond: new Date(start).getSeconds(),
+                              end,
+                              endDate: new Date(end).toLocaleDateString(),
+                              endYear: new Date(end).getFullYear(),
+                              endMonth: new Date(end).getMonth() + 1,
+                              endDay: new Date(end).getDay(),
+                              endTime: new Date(end).getTime(),
+                              endHour: new Date(end).getHours(),
+                              endMinute: new Date(end).getMinutes(),
+                              endSecond: new Date(end).getSeconds(),
+                          };
+                          Object.keys(guide).forEach((x) => {
+                              const regexpString = `@ggantt:${x}@`;
+                              const regexp = new RegExp(regexpString, "g");
+                              newData = newData.replace(regexp, guide[x]);
+                          });
+                          return newData;
+                      }
+                    : str;
+
                 const instance = new window.bootstrap.Tooltip(tooltip, {
                     offset: "[10, 20]",
                     trigger: "manual",
                     placement: this.option.tooltipPlacement,
                     container: this.layout.workspace,
-                    title: str,
+                    html: true,
+                    title: bindData,
                 });
                 bar.addEventListener("mouseenter", () => {
                     instance.show();

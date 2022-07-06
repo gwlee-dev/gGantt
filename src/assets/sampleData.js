@@ -84,3 +84,31 @@ window.sampleData = [
         ],
     },
 ];
+
+const html = `
+    <div class="text-start">
+        <span class="d-block fs-5"><strong>제목:</strong> @ggantt:title@</span>
+        <span class="d-block"><strong>시작 타임스탬프</strong>: @ggantt:start@</span>
+        <span class="d-block"><strong>시작</strong>: @ggantt:start@</span>
+        <span class="d-block"><strong>시작 일자</strong>: @ggantt:startDate@</span>
+        <span class="d-block"><strong>시작 년</strong>: @ggantt:startYear@</span>
+        <span class="d-block"><strong>시작 월</strong>: @ggantt:startMonth@</span>
+        <span class="d-block"><strong>시작 일</strong>: @ggantt:startDay@</span>
+        <span class="d-block"><strong>시작 시간</strong>: @ggantt:startHour@</span>
+        <span class="d-block"><strong>시작 시</strong>: @ggantt:startHour@</span>
+        <span class="d-block"><strong>시작 분</strong>: @ggantt:startMinute@</span>
+        <span class="d-block"><strong>시작 초</strong>: @ggantt:startSecond@</span>
+        <span class="d-block"><strong>종료 타임스탬프</strong>: @ggantt:end@</span>
+        <span class="d-block"><strong>종료</strong>: @ggantt:end@</span>
+        <span class="d-block"><strong>종료 일자</strong>: @ggantt:end@</span>
+        <span class="d-block"><strong>종료 년</strong>: @ggantt:endYear@</span>
+        <span class="d-block"><strong>종료 월</strong>: @ggantt:endMonth@</span>
+        <span class="d-block"><strong>종료 일</strong>: @ggantt:endDay@</span>
+        <span class="d-block"><strong>종료 시간</strong>: @ggantt:end@</span>
+        <span class="d-block"><strong>종료 시</strong>: @ggantt:endHour@</span>
+        <span class="d-block"><strong>종료 분</strong>: @ggantt:endMinute@</span>
+        <span class="d-block"><strong>종료 초</strong>: @ggantt:endSecond@</span>
+    </div>
+`;
+
+window.tooltipTemplateSample = html;
