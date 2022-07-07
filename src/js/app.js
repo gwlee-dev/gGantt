@@ -1,13 +1,12 @@
 import { sampleData } from "../assets/sampleData";
 
-const createEl = (tag, mainClass, ...className) => {
-    const element = document.createElement(tag);
-    element.className = `ggantt-${mainClass}`;
-    element.classList.add(...className);
-    return element;
-};
-
 export const gGantt = {
+    createEl: (tag, mainClass, ...className) => {
+        const element = document.createElement(tag);
+        element.className = `ggantt-${mainClass}`;
+        element.classList.add(...className);
+        return element;
+    },
     Chart: class {
         option = {
             autoInitialize: true,
@@ -39,9 +38,11 @@ export const gGantt = {
         nextMidnight = +new Date().setHours(24, 0, 0, 0);
         dayTime = 86400000;
         template = {
-            barWrap: createEl("div", "bar-wrap"),
-            bar: createEl("div", "bar", "rounded"),
+            barWrap: gGantt.createEl("div", "bar-wrap"),
+            bar: gGantt.createEl("div", "bar", "rounded"),
         };
+
+        createdBars = [];
 
         htmlReplacer = (html, name, start, end) => {
             const guide = {
@@ -78,17 +79,17 @@ export const gGantt = {
 
         init = () => {
             this.layout = {
-                labels: createEl(
+                labels: gGantt.createEl(
                     "div",
                     "label-area",
                     "vstack",
                     `gap-${this.option.stackGap}`
                 ),
                 divider: {
-                    wrap: createEl("div", "divider-wrap"),
-                    divider: createEl("div", "divider"),
+                    wrap: gGantt.createEl("div", "divider-wrap"),
+                    divider: gGantt.createEl("div", "divider"),
                 },
-                bars: createEl(
+                bars: gGantt.createEl(
                     "div",
                     "bar-area",
                     "col-10",
@@ -96,23 +97,23 @@ export const gGantt = {
                     `gap-${this.option.stackGap}`
                 ),
                 tick: {
-                    wrap: createEl("div", "tick-wrap"),
+                    wrap: gGantt.createEl("div", "tick-wrap"),
                     ticks: [...Array(24)].map((x, index) => {
-                        x = createEl("div", "tick", "col");
+                        x = gGantt.createEl("div", "tick", "col");
                         x.innerHTML = index + 1;
                         return x;
                     }),
                 },
                 timeline: {
-                    wrap: createEl("div", "timeline-wrap"),
-                    inner: createEl("div", "timeline-inner"),
-                    timeline: createEl("div", "timeline"),
+                    wrap: gGantt.createEl("div", "timeline-wrap"),
+                    inner: gGantt.createEl("div", "timeline-inner"),
+                    timeline: gGantt.createEl("div", "timeline"),
                 },
-                workspace: createEl("div", "workspace"),
+                workspace: gGantt.createEl("div", "workspace"),
             };
 
-            this.root.className = "ggantt-root";
-            const fieldName = createEl("div", "field");
+            this.root.classList.add("ggantt-root");
+            const fieldName = gGantt.createEl("div", "field");
             fieldName.innerHTML = this.option.fieldTitle;
             if (this.option.tickPositionBottom) {
                 fieldName.classList.add("order-last");
@@ -223,23 +224,23 @@ export const gGantt = {
                     this.layout.bars.append(groupBar.barWrap);
                     this.layout.labels.append(groupBar.label);
 
-                    const barCollapse = createEl(
+                    const barCollapse = gGantt.createEl(
                         "div",
                         `item-${group.id}`,
                         "collapse"
                     );
-                    const barCollapseInner = createEl(
+                    const barCollapseInner = gGantt.createEl(
                         "div",
                         "collapse-inner",
                         "vstack",
                         `gap-${this.option.stackGap}`
                     );
-                    const labelCollapse = createEl(
+                    const labelCollapse = gGantt.createEl(
                         "div",
                         `item-${group.id}`,
                         "collapse"
                     );
-                    const labelCollapseInner = createEl(
+                    const labelCollapseInner = gGantt.createEl(
                         "div",
                         "collapse-inner",
                         "vstack",
@@ -280,7 +281,7 @@ export const gGantt = {
                     const latest = Math.max(
                         ...group.schedule.map((item) => +new Date(item.end))
                     );
-                    const label = createEl("div", "label");
+                    const label = gGantt.createEl("div", "label");
                     const labelBind = this.option.labelTemplate
                         ? this.htmlReplacer(
                               this.option.labelTemplate,
@@ -310,13 +311,46 @@ export const gGantt = {
             }
 
             const timelineFunc = () => {
-                const currentTime = +new Date() - this.lastMidnight;
+                const now = +new Date();
+                const currentTime = now - this.lastMidnight;
                 const timelinePos = (currentTime / this.dayTime) * 100;
                 this.layout.timeline.timeline.style.left = timelinePos + "%";
+
+                const bindClass = (arr, stat) => {
+                    arr.map((obj) => {
+                        if (
+                            ![...obj.bar.classList].includes(
+                                "ggantt-status-" + stat
+                            )
+                        )
+                            Array.from(obj.bar.classList)
+                                .filter((x) => x.startsWith("ggantt-status-"))
+                                .map((x) => obj.bar.classList.remove(x));
+                        obj.bar.classList.add("ggantt-status-" + stat);
+                        return obj;
+                    });
+                };
+
+                this.runningBars = bindClass(
+                    this.createdBars.filter(
+                        (obj) => obj.start < now && obj.end > now
+                    ),
+                    "running"
+                );
+                this.runningBars = bindClass(
+                    this.createdBars.filter(
+                        (obj) => obj.start < now && obj.end < now
+                    ),
+                    "done"
+                );
+                this.runningBars = bindClass(
+                    this.createdBars.filter((obj) => obj.start > now),
+                    "queued"
+                );
             };
 
             this.option.useTimeline &&
-                (timelineFunc() || setInterval(this.timeline, 1000));
+                (timelineFunc() || setInterval(timelineFunc, 1000));
             this.option.useDivider && dividerFunc();
         };
 
@@ -334,19 +368,8 @@ export const gGantt = {
             const barDuring = ((end - start - dueOffset) / this.dayTime) * 100;
             const barStart = ((start - this.lastMidnight) / this.dayTime) * 100;
 
-            const now = +new Date();
-            const done = end < now;
-            const queued = start > now;
-            const running = !done && !queued;
-
             const bar = this.template.bar.cloneNode();
             bar.id = id;
-            bar.setAttribute("data-gr-start", start);
-            bar.setAttribute("data-gr-end", end);
-
-            done && bar.classList.add("ggantt-status-done");
-            queued && bar.classList.add("ggantt-status-queued");
-            running && bar.classList.add("ggantt-status-running");
 
             !alreadyStarted && (bar.style.left = barStart + "%");
             (alreadyStarted || beContinue) && bar.classList.remove("rounded");
@@ -364,12 +387,12 @@ export const gGantt = {
                 ? this.htmlReplacer(this.option.labelTemplate, name, start, end)
                 : name;
 
-            const label = createEl("div", "label");
+            const label = gGantt.createEl("div", "label");
             label.innerHTML = labelBind;
 
             if (this.option.useTooltip) {
-                const tooltipWrap = createEl("div", "tooltip");
-                const tooltip = createEl("div", "v-element");
+                const tooltipWrap = gGantt.createEl("div", "tooltip");
+                const tooltip = gGantt.createEl("div", "v-element");
                 tooltipWrap.append(tooltip);
                 this.layout.workspace.append(tooltipWrap);
 
@@ -405,6 +428,7 @@ export const gGantt = {
                 bar.addEventListener("mouseleave", () => {
                     instance.hide();
                 });
+                this.createdBars.push({ bar, start, end });
             }
 
             return { bar, label };
