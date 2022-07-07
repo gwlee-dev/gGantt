@@ -1,4 +1,4 @@
-import { sampleData, templateSample } from "../assets/sampleData";
+import { sampleData } from "../assets/sampleData";
 
 const createEl = (tag, mainClass, ...className) => {
     const element = document.createElement(tag);
@@ -81,13 +81,12 @@ export const gGantt = {
                 labels: createEl(
                     "div",
                     "label-area",
-                    "col-auto",
                     "vstack",
                     `gap-${this.option.stackGap}`
                 ),
                 divider: {
-                    wrap: createEl("div", "divider-wrap", "col-auto"),
-                    divider: createEl("div", "divider", "col-auto", "mx-1"),
+                    wrap: createEl("div", "divider-wrap"),
+                    divider: createEl("div", "divider"),
                 },
                 bars: createEl(
                     "div",
@@ -97,7 +96,7 @@ export const gGantt = {
                     `gap-${this.option.stackGap}`
                 ),
                 tick: {
-                    wrap: createEl("div", "tick-wrap", "row", "g-0"),
+                    wrap: createEl("div", "tick-wrap"),
                     ticks: [...Array(24)].map((x, index) => {
                         x = createEl("div", "tick", "col");
                         x.innerHTML = index + 1;
@@ -112,7 +111,7 @@ export const gGantt = {
                 workspace: createEl("div", "workspace"),
             };
 
-            this.root.className = "row g-0 flex-nowrap";
+            this.root.className = "ggantt-root";
             const fieldName = createEl("div", "field");
             fieldName.innerHTML = this.option.fieldTitle;
             if (this.option.tickPositionBottom) {
@@ -160,6 +159,7 @@ export const gGantt = {
                 this.root.append(this.layout.divider.wrap);
             this.root.append(this.layout.bars);
 
+            const idChecks = [];
             const data = this.data.filter((group) => {
                 const starts = group.schedule
                     .map((x) => +new Date(x.start))
@@ -167,6 +167,17 @@ export const gGantt = {
                 const ends = group.schedule
                     .map((x) => +new Date(x.end))
                     .filter((x) => x > this.lastMidnight);
+                const idCheck = (id) => {
+                    if (idChecks.includes(id)) {
+                        throw new TypeError(
+                            id + ": ID값은 중복될 수 없습니다."
+                        );
+                    } else {
+                        idChecks.push(id);
+                    }
+                };
+                idCheck(group.id);
+                group.schedule.forEach((x) => idCheck(x.id));
                 return !!starts.length && !!ends.length;
             });
 
@@ -175,7 +186,8 @@ export const gGantt = {
                     const obj = this.createBar(
                         child.title,
                         +new Date(child.start),
-                        +new Date(child.end)
+                        +new Date(child.end),
+                        child.id
                     );
                     obj.barWrap = this.template.barWrap.cloneNode();
                     obj.barWrap.append(obj.bar);
@@ -193,7 +205,8 @@ export const gGantt = {
                     const groupBar = this.createBar(
                         group.title,
                         earliest,
-                        latest
+                        latest,
+                        group.id
                     );
                     groupBar.barWrap = this.template.barWrap.cloneNode();
                     groupBar.barWrap.append(groupBar.bar);
@@ -282,7 +295,8 @@ export const gGantt = {
                         const obj = this.createBar(
                             child.title,
                             +new Date(child.start),
-                            +new Date(child.end)
+                            +new Date(child.end),
+                            child.id
                         );
                         return obj.bar;
                     });
@@ -306,7 +320,7 @@ export const gGantt = {
             this.option.useDivider && dividerFunc();
         };
 
-        createBar = (name, start, end) => {
+        createBar = (name, start, end, id) => {
             if (start > end) {
                 throw new TypeError(
                     name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다."
@@ -326,10 +340,13 @@ export const gGantt = {
             const running = !done && !queued;
 
             const bar = this.template.bar.cloneNode();
+            bar.id = id;
+            bar.setAttribute("data-gr-start", start);
+            bar.setAttribute("data-gr-end", end);
 
-            done && bar.classList.add("ggantt-done");
-            queued && bar.classList.add("ggantt-queued");
-            running && bar.classList.add("ggantt-running");
+            done && bar.classList.add("ggantt-status-done");
+            queued && bar.classList.add("ggantt-status-queued");
+            running && bar.classList.add("ggantt-status-running");
 
             !alreadyStarted && (bar.style.left = barStart + "%");
             (alreadyStarted || beContinue) && bar.classList.remove("rounded");

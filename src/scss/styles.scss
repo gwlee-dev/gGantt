@@ -39,7 +39,7 @@ $ggantt-blink-opacity: 75%;
     white-space: nowrap;
 }
 
-.ggantt-running {
+.ggantt-status-running {
     background-color: var(--bs-primary);
     animation: blink ease-out 2s infinite;
     @keyframes blink {
@@ -55,11 +55,11 @@ $ggantt-blink-opacity: 75%;
     }
 }
 
-.ggantt-queued {
+.ggantt-status-queued {
     background-color: var(--bs-secondary);
 }
 
-.ggantt-done {
+.ggantt-status-done {
     background-color: var(--bs-success);
     opacity: 50%;
 }
@@ -100,6 +100,7 @@ $ggantt-blink-opacity: 75%;
 }
 
 .ggantt-divider-wrap {
+    padding: 0 1rem;
     .ggantt-divider {
         width: 3px;
         transition: transform ease-in-out 0.1s;
@@ -121,4 +122,22 @@ $ggantt-blink-opacity: 75%;
 
 .ggantt-tooltip {
     position: absolute;
+}
+
+.ggantt-label-area,
+.ggantt-divider-wrap,
+.ggantt-divider {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.ggantt-root,
+.ggantt-tick-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 0 -0.75rem;
+}
+
+.ggantt-root {
+    flex-wrap: nowrap;
 }
