@@ -110,6 +110,7 @@ export const gGantt = {
                     inner: gGantt.createEl("div", "timeline-inner"),
                     timeline: gGantt.createEl("div", "timeline"),
                 },
+                cursor: gGantt.createEl("div", "cursor"),
                 workspace: gGantt.createEl("div", "workspace"),
             };
 
@@ -152,7 +153,10 @@ export const gGantt = {
 
             document.body.append(this.layout.workspace);
             this.layout.timeline.wrap.append(this.layout.timeline.timeline);
-            this.layout.bars.append(this.layout.timeline.wrap);
+            this.layout.bars.append(
+                this.layout.timeline.wrap,
+                this.layout.cursor
+            );
             this.layout.labels.append(fieldName);
             this.layout.tick.wrap.append(...this.layout.tick.ticks);
             this.layout.bars.append(this.layout.tick.wrap);
@@ -160,6 +164,22 @@ export const gGantt = {
             this.option.useDivider &&
                 this.root.append(this.layout.divider.wrap);
             this.root.append(this.layout.bars);
+
+            const cursorFunc = ({ clientX }) => {
+                const { x } = this.layout.bars.getBoundingClientRect();
+                console.log(x);
+                this.layout.cursor.style.left = clientX - x + "px";
+            };
+
+            this.layout.bars.addEventListener("mouseenter", () => {
+                this.layout.cursor.classList.add("show");
+                this.root.addEventListener("mousemove", cursorFunc);
+            });
+
+            this.layout.bars.addEventListener("mouseleave", () => {
+                this.layout.cursor.classList.remove("show");
+                this.root.removeEventListener("mousemove", cursorFunc);
+            });
 
             const idChecks = [];
             const data = this.data.filter((group) => {

@@ -88,7 +88,8 @@ $ggantt-blink-opacity: 75%;
 }
 
 .ggantt-timeline-wrap,
-.ggantt-timeline-inner {
+.ggantt-timeline-inner,
+.ggantt-cursor-inner {
     height: 100%;
     width: 100%;
 }
@@ -101,13 +102,22 @@ $ggantt-blink-opacity: 75%;
     position: relative;
 }
 
+.ggantt-timeline,
+.ggantt-cursor {
+    position: absolute;
+    height: 100%;
+    opacity: 0.75;
+    background-color: var(--bs-warning);
+}
+
 .ggantt-timeline {
     width: 2px;
     transform: translateX(-1px);
-    position: absolute;
-    height: 100%;
     background-color: var(--bs-warning);
-    opacity: 0.75;
+}
+
+.ggantt-cursor.show {
+    border-left: 1px var(--bs-border-style) var(--bs-border-color);
 }
 
 .ggantt-timeline-wrap,
