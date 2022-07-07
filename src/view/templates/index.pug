@@ -47,6 +47,42 @@ block contents
                 span.d-block labelTemplate: ("HTML String" || false), // default: false
                 span.d-block fieldTitle: ("HTML String"), // default: "데이터명"
 
+        .card
+            .card-header.hstack.justify-content-between
+                span Template Keyword Reservation
+            .card-body 
+                strong Usage: @ggantt:#[i keyword] @
+                span.d-block 제목: title
+                span.d-block 시작 타임스탬프: start
+                span.d-block 시작 일자: startDate
+                span.d-block 시작 년: startYear
+                span.d-block 시작 월: startMonth
+                span.d-block 시작 일: startDay
+                span.d-block 시작 시간: startTime
+                span.d-block 시작 GMT시간: startGMT
+                span.d-block 시작 시: startHour
+                span.d-block 시작 분: startMinute
+                span.d-block 시작 초: startSecond
+                span.d-block 종료 타임스탬프: end
+                span.d-block 종료 일자: endDate
+                span.d-block 종료 년: endYear
+                span.d-block 종료 월: endMonth
+                span.d-block 종료 일: endDay
+                span.d-block 종료 GMT시간: endGMT
+                span.d-block 종료 시간: endTime
+                span.d-block 종료 시: endHour
+                span.d-block 종료 분: endMinute
+                span.d-block 종료 초: endSecond
+            .card-body 
+                strong example
+                pre.
+                    &lt;span class="d-block">&lt;strong>제목:&lt;/strong> @ggantt:title@&lt;/span>
+                    &lt;span class="d-block">&lt;strong>시작 일자&lt;/strong>: @ggantt:startDate@&lt;/span>
+                span will be replaced to
+                pre.
+                    &lt;span class="d-block">&lt;strong>제목:&lt;/strong> 업무 A&lt;/span>
+                    &lt;span class="d-block">&lt;strong>시작 일자&lt;/strong>: 2022. 07. 07.&lt;/span>
+
 //- block scripts
 //-     script(src="/static/assets/sampleData.js") 
 //-     script.

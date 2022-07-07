@@ -403,29 +403,17 @@ const queue = new gGantt.Chart(
     sampleData,
     {
         displayMode: "queue",
-        tooltipTemplate: templateSample,
-        labelTemplate: templateSample,
-        fieldTitle: "queue",
     }
 );
 const group = new gGantt.Chart(
     document.querySelector("#ggantt-group"),
-    sampleData,
-    {
-        displayMode: "group",
-        tooltipTemplate: templateSample,
-        labelTemplate: templateSample,
-        fieldTitle: "group",
-    }
+    sampleData
 );
 const separated = new gGantt.Chart(
     document.querySelector("#ggantt-separated"),
     sampleData,
     {
         displayMode: "separated",
-        tooltipTemplate: templateSample,
-        labelTemplate: templateSample,
-        fieldTitle: "separated",
     }
 );
 
