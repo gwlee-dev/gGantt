@@ -21,6 +21,7 @@ export const gGantt = {
             tooltipTemplate: false,
             labelTemplate: false,
             fieldTitle: "데이터명",
+            sortChild: true,
         };
 
         constructor(root, data, userOption) {
@@ -182,8 +183,14 @@ export const gGantt = {
                 return !!starts.length && !!ends.length;
             });
 
-            const getChild = (schedule) =>
-                schedule.map((child) => {
+            const getChild = (schedule) => {
+                let childData = schedule;
+                this.option.sortChild &&
+                    (childData = schedule.sort(
+                        (a, b) => new Date(a.start) - new Date(b.start)
+                    ));
+                console.log(childData);
+                return childData.map((child) => {
                     const obj = this.createBar(
                         child.title,
                         +new Date(child.start),
@@ -194,6 +201,7 @@ export const gGantt = {
                     obj.barWrap.append(obj.bar);
                     return obj;
                 });
+            };
 
             if (this.option.displayMode === "group") {
                 data.forEach((group) => {

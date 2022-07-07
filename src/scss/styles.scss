@@ -1,3 +1,12 @@
+.ggantt-root {
+    &,
+    .ggantt-tick-wrap {
+        display: flex;
+        flex-wrap: nowrap;
+        margin-left: 0 -0.75rem;
+    }
+}
+
 $ggantt-row-height: 1.5rem;
 $ggantt-blink-opacity: 75%;
 
@@ -12,13 +21,16 @@ $ggantt-blink-opacity: 75%;
     position: relative;
 }
 
+.ggantt-bar-area,
 .ggantt-label-area {
     height: 100%;
+}
+
+.ggantt-label-area {
     flex-wrap: nowrap;
 }
 
 .ggantt-bar-area {
-    height: 100%;
     position: relative;
     overflow: auto;
 }
@@ -27,8 +39,18 @@ $ggantt-blink-opacity: 75%;
     color: var(--bs-white);
     font-weight: 700;
     position: absolute;
-    padding-left: 0.5rem;
+    padding: 0 0.5rem;
     transition: background-color 0.5s ease;
+    display: flex;
+
+    &.rounded-end::before {
+        content: "\2190";
+        margin-right: 0.25rem;
+    }
+    &.rounded-start::after {
+        content: "\2192";
+        margin-left: auto;
+    }
 }
 
 .ggantt-field,
@@ -65,16 +87,18 @@ $ggantt-blink-opacity: 75%;
     opacity: 50%;
 }
 
-.ggantt-timeline-wrap {
-    position: absolute;
+.ggantt-timeline-wrap,
+.ggantt-timeline-inner {
     height: 100%;
     width: 100%;
 }
 
+.ggantt-timeline-wrap {
+    position: absolute;
+}
+
 .ggantt-timeline-inner {
     position: relative;
-    height: 100%;
-    width: 100%;
 }
 
 .ggantt-timeline {
@@ -130,15 +154,4 @@ $ggantt-blink-opacity: 75%;
 .ggantt-divider {
     flex: 0 0 auto;
     width: auto;
-}
-
-.ggantt-root,
-.ggantt-tick-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: 0 -0.75rem;
-}
-
-.ggantt-root {
-    flex-wrap: nowrap;
 }
