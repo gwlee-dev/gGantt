@@ -22,6 +22,7 @@ export const gGantt = {
             labelTemplate: false,
             fieldTitle: "데이터명",
             sortChild: true,
+            useCursor: true,
         };
 
         constructor(root, data, userOption) {
@@ -165,21 +166,23 @@ export const gGantt = {
                 this.root.append(this.layout.divider.wrap);
             this.root.append(this.layout.bars);
 
-            const cursorFunc = ({ clientX }) => {
-                const { x } = this.layout.bars.getBoundingClientRect();
-                console.log(x);
-                this.layout.cursor.style.left = clientX - x + "px";
-            };
+            this.option.useCursor &&
+                (() => {
+                    const cursorFunc = ({ clientX }) => {
+                        const { x } = this.layout.bars.getBoundingClientRect();
+                        this.layout.cursor.style.left = clientX - x + "px";
+                    };
 
-            this.layout.bars.addEventListener("mouseenter", () => {
-                this.layout.cursor.classList.add("show");
-                this.root.addEventListener("mousemove", cursorFunc);
-            });
+                    this.layout.bars.addEventListener("mouseenter", () => {
+                        this.layout.cursor.classList.add("show");
+                        this.root.addEventListener("mousemove", cursorFunc);
+                    });
 
-            this.layout.bars.addEventListener("mouseleave", () => {
-                this.layout.cursor.classList.remove("show");
-                this.root.removeEventListener("mousemove", cursorFunc);
-            });
+                    this.layout.bars.addEventListener("mouseleave", () => {
+                        this.layout.cursor.classList.remove("show");
+                        this.root.removeEventListener("mousemove", cursorFunc);
+                    });
+                })();
 
             const idChecks = [];
             const data = this.data.filter((group) => {
@@ -209,7 +212,6 @@ export const gGantt = {
                     (childData = schedule.sort(
                         (a, b) => new Date(a.start) - new Date(b.start)
                     ));
-                console.log(childData);
                 return childData.map((child) => {
                     const obj = this.createBar(
                         child.title,
