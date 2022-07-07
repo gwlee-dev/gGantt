@@ -1,6 +1,10 @@
 import { sampleData } from "../assets/sampleData";
 
 export const gGantt = {
+    instances: [],
+    lastMidnight: +new Date().setHours(0, 0, 0, 0),
+    nextMidnight: +new Date().setHours(24, 0, 0, 0),
+    dayTime: 86400000,
     createEl: (tag, mainClass, ...className) => {
         const element = document.createElement(tag);
         element.className = `ggantt-${mainClass}`;
@@ -11,7 +15,6 @@ export const gGantt = {
         option = {
             autoInitialize: true,
             displayMode: "group",
-            stackGap: 2,
             tickPositionBottom: false,
             showRange: false,
             useTooltip: true,
@@ -28,6 +31,7 @@ export const gGantt = {
         constructor(root, data, userOption) {
             this.root = root;
             this.data = data;
+            this.id = Math.random().toString().substring(2, 8);
 
             userOption &&
                 Object.keys(this.option).forEach((x) => {
@@ -36,9 +40,6 @@ export const gGantt = {
             this.option.autoInitialize && this.init(userOption);
         }
 
-        lastMidnight = +new Date().setHours(0, 0, 0, 0);
-        nextMidnight = +new Date().setHours(24, 0, 0, 0);
-        dayTime = 86400000;
         template = {
             barWrap: gGantt.createEl("div", "bar-wrap"),
             bar: gGantt.createEl("div", "bar", "rounded"),
@@ -81,23 +82,12 @@ export const gGantt = {
 
         init = () => {
             this.layout = {
-                labels: gGantt.createEl(
-                    "div",
-                    "label-area",
-                    "vstack",
-                    `gap-${this.option.stackGap}`
-                ),
+                labels: gGantt.createEl("div", "label-area"),
                 divider: {
                     wrap: gGantt.createEl("div", "divider-wrap"),
                     divider: gGantt.createEl("div", "divider"),
                 },
-                bars: gGantt.createEl(
-                    "div",
-                    "bar-area",
-                    "col-10",
-                    "vstack",
-                    `gap-${this.option.stackGap}`
-                ),
+                bars: gGantt.createEl("div", "bar-area", "col-10"),
                 tick: {
                     wrap: gGantt.createEl("div", "tick-wrap"),
                     ticks: [...Array(24)].map((x, index) => {
@@ -115,7 +105,7 @@ export const gGantt = {
                 workspace: gGantt.createEl("div", "workspace"),
             };
 
-            this.root.classList.add("ggantt-root");
+            this.root.classList.add("ggantt");
             const fieldName = gGantt.createEl("div", "field");
             fieldName.innerHTML = this.option.fieldTitle;
             if (this.option.tickPositionBottom) {
@@ -130,24 +120,33 @@ export const gGantt = {
                     const { x: rootX, width } =
                         this.root.getBoundingClientRect();
                     const ratio = {
-                        label: clientX - rootX,
-                        bar: width - clientX + rootX,
+                        label: ((clientX - rootX - 3) / width) * 100,
+                        bar: ((width - clientX + rootX) / width) * 100,
                     };
-                    this.layout.labels.style.width =
-                        ((ratio.label - 3) / width) * 100 + "%";
-                    this.layout.bars.style.width =
-                        (ratio.bar / width) * 100 + "%";
+                    if (ratio.bar < 30) {
+                        this.layout.labels.style.width = "70%";
+                        this.layout.bars.style.width = "30%";
+                    } else if (ratio.bar > 95) {
+                        this.layout.labels.style.width = "5%";
+                        this.layout.bars.style.width = "95%";
+                    } else {
+                        this.layout.labels.style.width = ratio.label + "%";
+                        this.layout.bars.style.width = ratio.bar + "%";
+                    }
                 };
 
                 this.layout.divider.wrap.addEventListener("mousedown", () => {
                     this.root.style.userSelect = "none";
-                    document.addEventListener("mousemove", mousemoveEvent);
-                    document.addEventListener("mouseup", () => {
-                        this.root.style.userSelect = "";
-                        document.removeEventListener(
+                    document.body.addEventListener("mousemove", mousemoveEvent);
+                    const removeMove = () => {
+                        document.body.removeEventListener(
                             "mousemove",
                             mousemoveEvent
                         );
+                    };
+                    this.root.addEventListener("mouseup", () => {
+                        this.root.style.userSelect = "";
+                        removeMove();
                     });
                 });
             };
@@ -188,10 +187,10 @@ export const gGantt = {
             const data = this.data.filter((group) => {
                 const starts = group.schedule
                     .map((x) => +new Date(x.start))
-                    .filter((x) => x < this.nextMidnight);
+                    .filter((x) => x < gGantt.nextMidnight);
                 const ends = group.schedule
                     .map((x) => +new Date(x.end))
-                    .filter((x) => x > this.lastMidnight);
+                    .filter((x) => x > gGantt.lastMidnight);
                 const idCheck = (id) => {
                     if (idChecks.includes(id)) {
                         throw new TypeError(
@@ -240,13 +239,14 @@ export const gGantt = {
                         group.id
                     );
                     groupBar.barWrap = this.template.barWrap.cloneNode();
+                    groupBar.barWrap.id = "ggantt-group-" + group.id;
                     groupBar.barWrap.append(groupBar.bar);
 
                     [groupBar.label, groupBar.barWrap].forEach((x) => {
                         x.setAttribute("data-bs-toggle", "collapse");
                         x.setAttribute(
                             "data-bs-target",
-                            `.ggantt-item-${group.id}`
+                            `.ggantt-item-${this.id}-${group.id}`
                         );
                         x.setAttribute("role", "button");
                     });
@@ -256,25 +256,21 @@ export const gGantt = {
 
                     const barCollapse = gGantt.createEl(
                         "div",
-                        `item-${group.id}`,
+                        `item-${this.id}-${group.id}`,
                         "collapse"
                     );
                     const barCollapseInner = gGantt.createEl(
                         "div",
-                        "collapse-inner",
-                        "vstack",
-                        `gap-${this.option.stackGap}`
+                        "collapse-inner"
                     );
                     const labelCollapse = gGantt.createEl(
                         "div",
-                        `item-${group.id}`,
+                        `item-${this.id}-${group.id}`,
                         "collapse"
                     );
                     const labelCollapseInner = gGantt.createEl(
                         "div",
-                        "collapse-inner",
-                        "vstack",
-                        `gap-${this.option.stackGap}`
+                        "collapse-inner"
                     );
                     const objs = getChild(group.schedule);
                     const bars = objs.map((x) => x.barWrap);
@@ -342,8 +338,8 @@ export const gGantt = {
 
             const timelineFunc = () => {
                 const now = +new Date();
-                const currentTime = now - this.lastMidnight;
-                const timelinePos = (currentTime / this.dayTime) * 100;
+                const currentTime = now - gGantt.lastMidnight;
+                const timelinePos = (currentTime / gGantt.dayTime) * 100;
                 this.layout.timeline.timeline.style.left = timelinePos + "%";
 
                 const bindClass = (arr, stat) => {
@@ -391,12 +387,14 @@ export const gGantt = {
                 );
             }
 
-            const alreadyStarted = start < this.lastMidnight;
-            const beContinue = end > this.nextMidnight;
+            const alreadyStarted = start < gGantt.lastMidnight;
+            const beContinue = end > gGantt.nextMidnight;
             let dueOffset = 0;
-            alreadyStarted && (dueOffset = this.lastMidnight - start);
-            const barDuring = ((end - start - dueOffset) / this.dayTime) * 100;
-            const barStart = ((start - this.lastMidnight) / this.dayTime) * 100;
+            alreadyStarted && (dueOffset = gGantt.lastMidnight - start);
+            const barDuring =
+                ((end - start - dueOffset) / gGantt.dayTime) * 100;
+            const barStart =
+                ((start - gGantt.lastMidnight) / gGantt.dayTime) * 100;
 
             const bar = this.template.bar.cloneNode();
             bar.id = id;
@@ -422,7 +420,7 @@ export const gGantt = {
 
             if (this.option.useTooltip) {
                 const tooltipWrap = gGantt.createEl("div", "tooltip");
-                const tooltip = gGantt.createEl("div", "v-element");
+                const tooltip = gGantt.createEl("div", "dummy");
                 tooltipWrap.append(tooltip);
                 this.layout.workspace.append(tooltipWrap);
 
