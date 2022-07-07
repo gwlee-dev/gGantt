@@ -30,25 +30,26 @@ block contents
                 span Method
             .card-body 
                 span.d-block chartObj.init() // initialize chart
-                span.d-block chartObj.createBar(name, start timestamp, end timestamp) // return DOM element
         .card
             .card-header.hstack.justify-content-between
                 span Options
             .card-body 
-                span.d-block autoInitialize: true, // default: true
-                span.d-block displayMode: "queue", // default: "group"
-                span.d-block stackGap: 4, // default: 2
-                span.d-block tickPositionBottom: true, // default: false
-                span.d-block showRange: true, // default: false
-                span.d-block useTooltip: true, // default: true
-                span.d-block tooltipPlacement: "top", // default: bottom
-                span.d-block useTimeline: true, // default: true
+                span.d-block autoInitialize: (true || false), // default: true
+                span.d-block displayMode: ("queue" || "group" || "separated"), // default: "group"
+                span.d-block stackGap: (0 ~ 5), // default: 2
+                span.d-block tickPositionBottom: (true || false), // default: false
+                span.d-block showRange: (true || false), // default: false
+                span.d-block useTooltip: (true || false), // default: true
+                span.d-block tooltipPlacement: ("top" || "bottom"), // default: bottom
+                span.d-block useTimeline: (true || false), // default: true
                 span.d-block useDivider: true, // default: true
+                span.d-block tooltipTemplate: ("HTML String" || false), // default: false
+                span.d-block labelTemplate: ("HTML String" || false), // default: false
+                span.d-block fieldTitle: ("HTML String"), // default: "데이터명"
 
-block scripts
-    script(src="/static/assets/sampleData.js") 
-    script.
-        const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, { displayMode: "queue", tooltipTemplate: tooltipTemplateSample });
-        const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData);
-        const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, { displayMode: "separated" });
-        console.log(queue.option.tooltipTemplate);
+//- block scripts
+//-     script(src="/static/assets/sampleData.js") 
+//-     script.
+//-         const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, { displayMode: "queue", tooltipTemplate: templateSample, labelTemplate: templateSample });
+//-         const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData);
+//-         const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, { displayMode: "separated" });

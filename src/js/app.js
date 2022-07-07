@@ -1,3 +1,5 @@
+import { sampleData, templateSample } from "../assets/sampleData";
+
 const createEl = (tag, mainClass, ...className) => {
     const element = document.createElement(tag);
     element.className = `ggantt-${mainClass}`;
@@ -18,6 +20,8 @@ export const gGantt = {
             useTimeline: true,
             useDivider: true,
             tooltipTemplate: false,
+            labelTemplate: false,
+            fieldTitle: "데이터명",
         };
 
         constructor(root, data, userOption) {
@@ -37,6 +41,39 @@ export const gGantt = {
         template = {
             barWrap: createEl("div", "bar-wrap"),
             bar: createEl("div", "bar", "rounded"),
+        };
+
+        htmlReplacer = (html, name, start, end) => {
+            const guide = {
+                title: name,
+                start,
+                startDate: new Date(start).toLocaleDateString(),
+                startYear: new Date(start).getFullYear(),
+                startMonth: new Date(start).getMonth() + 1,
+                startDay: new Date(start).getDay(),
+                startTime: new Date(start).toLocaleTimeString(),
+                startGMT: new Date(start).toTimeString(),
+                startHour: new Date(start).getHours(),
+                startMinute: new Date(start).getMinutes(),
+                startSecond: new Date(start).getSeconds(),
+                end,
+                endDate: new Date(end).toLocaleDateString(),
+                endYear: new Date(end).getFullYear(),
+                endMonth: new Date(end).getMonth() + 1,
+                endDay: new Date(end).getDay(),
+                endTime: new Date(end).toLocaleTimeString(),
+                endGMT: new Date(end).toTimeString(),
+                endHour: new Date(end).getHours(),
+                endMinute: new Date(end).getMinutes(),
+                endSecond: new Date(end).getSeconds(),
+            };
+            let newData = html;
+            Object.keys(guide).forEach((x) => {
+                const regexpString = `@ggantt:${x}@`;
+                const regexp = new RegExp(regexpString, "g");
+                newData = newData.replace(regexp, guide[x]);
+            });
+            return newData;
         };
 
         init = () => {
@@ -77,7 +114,7 @@ export const gGantt = {
 
             this.root.className = "row g-0 flex-nowrap";
             const fieldName = createEl("div", "field");
-            fieldName.innerHTML = "데이터명";
+            fieldName.innerHTML = this.option.fieldTitle;
             if (this.option.tickPositionBottom) {
                 fieldName.classList.add("order-last");
                 this.layout.tick.wrap.classList.add("order-last");
@@ -212,9 +249,6 @@ export const gGantt = {
 
             if (this.option.displayMode === "separated") {
                 data.forEach((group) => {
-                    const label = createEl("div", "label");
-                    label.innerHTML = group.title;
-
                     const objs = getChild(group.schedule);
 
                     const bars = objs.map((x) => x.barWrap);
@@ -227,8 +261,22 @@ export const gGantt = {
 
             if (this.option.displayMode === "queue") {
                 data.forEach((group) => {
+                    const earliest = Math.min(
+                        ...group.schedule.map((item) => +new Date(item.start))
+                    );
+                    const latest = Math.max(
+                        ...group.schedule.map((item) => +new Date(item.end))
+                    );
                     const label = createEl("div", "label");
-                    label.innerHTML = group.title;
+                    const labelBind = this.option.labelTemplate
+                        ? this.htmlReplacer(
+                              this.option.labelTemplate,
+                              group.title,
+                              earliest,
+                              latest
+                          )
+                        : group.title;
+                    label.innerHTML = labelBind;
 
                     const objs = group.schedule.map((child) => {
                         const obj = this.createBar(
@@ -260,12 +308,10 @@ export const gGantt = {
 
         createBar = (name, start, end) => {
             if (start > end) {
-                alert(name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다.");
-                return;
+                throw new TypeError(
+                    name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다."
+                );
             }
-
-            const label = createEl("div", "label");
-            label.innerHTML = name;
 
             const alreadyStarted = start < this.lastMidnight;
             const beContinue = end > this.nextMidnight;
@@ -297,43 +343,26 @@ export const gGantt = {
             const str = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
             this.option.showRange && bar.append(` ${str}`);
 
+            const labelBind = this.option.labelTemplate
+                ? this.htmlReplacer(this.option.labelTemplate, name, start, end)
+                : name;
+
+            const label = createEl("div", "label");
+            label.innerHTML = labelBind;
+
             if (this.option.useTooltip) {
                 const tooltipWrap = createEl("div", "tooltip");
                 const tooltip = createEl("div", "v-element");
                 tooltipWrap.append(tooltip);
                 this.layout.workspace.append(tooltipWrap);
 
-                const bindData = this.option.tooltipTemplate
-                    ? () => {
-                          let newData = this.option.tooltipTemplate;
-                          const guide = {
-                              title: name,
-                              start,
-                              startDate: new Date(start).toLocaleDateString(),
-                              startYear: new Date(start).getFullYear(),
-                              startMonth: new Date(start).getMonth() + 1,
-                              startDay: new Date(start).getDay(),
-                              startTime: new Date(start).getTime(),
-                              startHour: new Date(start).getHours(),
-                              startMinute: new Date(start).getMinutes(),
-                              startSecond: new Date(start).getSeconds(),
-                              end,
-                              endDate: new Date(end).toLocaleDateString(),
-                              endYear: new Date(end).getFullYear(),
-                              endMonth: new Date(end).getMonth() + 1,
-                              endDay: new Date(end).getDay(),
-                              endTime: new Date(end).getTime(),
-                              endHour: new Date(end).getHours(),
-                              endMinute: new Date(end).getMinutes(),
-                              endSecond: new Date(end).getSeconds(),
-                          };
-                          Object.keys(guide).forEach((x) => {
-                              const regexpString = `@ggantt:${x}@`;
-                              const regexp = new RegExp(regexpString, "g");
-                              newData = newData.replace(regexp, guide[x]);
-                          });
-                          return newData;
-                      }
+                const tooltipBind = this.option.tooltipTemplate
+                    ? this.htmlReplacer(
+                          this.option.tooltipTemplate,
+                          name,
+                          start,
+                          end
+                      )
                     : str;
 
                 const instance = new window.bootstrap.Tooltip(tooltip, {
@@ -342,7 +371,7 @@ export const gGantt = {
                     placement: this.option.tooltipPlacement,
                     container: this.layout.workspace,
                     html: true,
-                    title: bindData,
+                    title: tooltipBind,
                 });
                 bar.addEventListener("mouseenter", () => {
                     instance.show();
@@ -368,3 +397,36 @@ export const gGantt = {
 
 window.gGantt = gGantt;
 export default gGantt;
+
+const queue = new gGantt.Chart(
+    document.querySelector("#ggantt-queue"),
+    sampleData,
+    {
+        displayMode: "queue",
+        tooltipTemplate: templateSample,
+        labelTemplate: templateSample,
+        fieldTitle: "queue",
+    }
+);
+const group = new gGantt.Chart(
+    document.querySelector("#ggantt-group"),
+    sampleData,
+    {
+        displayMode: "group",
+        tooltipTemplate: templateSample,
+        labelTemplate: templateSample,
+        fieldTitle: "group",
+    }
+);
+const separated = new gGantt.Chart(
+    document.querySelector("#ggantt-separated"),
+    sampleData,
+    {
+        displayMode: "separated",
+        tooltipTemplate: templateSample,
+        labelTemplate: templateSample,
+        fieldTitle: "separated",
+    }
+);
+
+window.sample = { queue, group, separated };
