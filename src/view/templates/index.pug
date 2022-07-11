@@ -86,9 +86,15 @@ block contents
                     &lt;span class="d-block">&lt;strong>제목:&lt;/strong> 업무 A&lt;/span>
                     &lt;span class="d-block">&lt;strong>시작 일자:&lt;/strong> 2022. 07. 07.&lt;/span>
 
-//- block scripts
-//-     script(src="/static/assets/sampleData.js") 
-//-     script.
-//-         const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, { displayMode: "queue", tooltipTemplate: templateSample, labelTemplate: templateSample });
-//-         const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData);
-//-         const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, { displayMode: "separated" });
+block scripts
+    script(src="/static/assets/sampleData.js")
+    script.
+        const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, {
+            displayMode: "queue",
+        });
+        const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData);
+        const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, {
+            displayMode: "separated",
+        });
+
+        window.sample = { queue, group, separated };

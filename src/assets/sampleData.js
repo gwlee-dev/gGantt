@@ -1,4 +1,4 @@
-export const sampleData = [
+const sampleData = [
     {
         title: "일정그룹 A~B",
         id: "0",
@@ -87,7 +87,7 @@ export const sampleData = [
 
 window.sampleData = sampleData;
 
-export const templateSample = `
+const templateSample = `
     <div class="text-start">
         <span class="d-block fs-5"><strong>제목:</strong> @ggantt:title@</span>
         <span class="d-block"><strong>시작 타임스탬프</strong>: @ggantt:start@</span>

@@ -1,5 +1,3 @@
-import { sampleData } from "../assets/sampleData";
-
 export const gGantt = {
     instances: [],
     lastMidnight: +new Date().setHours(0, 0, 0, 0),
@@ -106,14 +104,78 @@ export const gGantt = {
             };
 
             this.root.classList.add("ggantt");
-            const fieldName = gGantt.createEl("div", "field");
-            fieldName.innerHTML = this.option.fieldTitle;
-            if (this.option.tickPositionBottom) {
-                fieldName.classList.add("order-last");
-                this.layout.tick.wrap.classList.add("order-last");
-            }
 
-            this.layout.divider.wrap.append(this.layout.divider.divider);
+            const idChecks = [];
+            const data = this.data.filter((group) => {
+                const starts = group.schedule
+                    .map((x) => +new Date(x.start))
+                    .filter((x) => x < gGantt.nextMidnight);
+                const ends = group.schedule
+                    .map((x) => +new Date(x.end))
+                    .filter((x) => x > gGantt.lastMidnight);
+                const idCheck = (id) => {
+                    if (idChecks.includes(id)) {
+                        throw new TypeError(
+                            id + ": ID값은 중복될 수 없습니다."
+                        );
+                    } else {
+                        idChecks.push(id);
+                    }
+                };
+                idCheck(group.id);
+                group.schedule.forEach((x) => idCheck(x.id));
+                return !!starts.length && !!ends.length;
+            });
+
+            if (data.length) {
+                const fieldName = gGantt.createEl("div", "field");
+                fieldName.innerHTML = this.option.fieldTitle;
+                if (this.option.tickPositionBottom) {
+                    fieldName.classList.add("order-last");
+                    this.layout.tick.wrap.classList.add("order-last");
+                }
+
+                this.layout.divider.wrap.append(this.layout.divider.divider);
+
+                document.body.append(this.layout.workspace);
+                this.layout.timeline.wrap.append(this.layout.timeline.timeline);
+                this.layout.bars.append(
+                    this.layout.timeline.wrap,
+                    this.layout.cursor
+                );
+                this.layout.labels.append(fieldName);
+                this.layout.tick.wrap.append(...this.layout.tick.ticks);
+                this.layout.bars.append(this.layout.tick.wrap);
+                this.root.append(this.layout.labels);
+                this.option.useDivider &&
+                    this.root.append(this.layout.divider.wrap);
+                this.root.append(this.layout.bars);
+                this.option.useCursor &&
+                    (() => {
+                        const cursorFunc = ({ clientX }) => {
+                            const { x } =
+                                this.layout.bars.getBoundingClientRect();
+                            this.layout.cursor.style.left = clientX - x + "px";
+                        };
+
+                        this.layout.bars.addEventListener("mouseenter", () => {
+                            this.layout.cursor.classList.add("show");
+                            this.root.addEventListener("mousemove", cursorFunc);
+                        });
+
+                        this.layout.bars.addEventListener("mouseleave", () => {
+                            this.layout.cursor.classList.remove("show");
+                            this.root.removeEventListener(
+                                "mousemove",
+                                cursorFunc
+                            );
+                        });
+                    })();
+            } else {
+                const voidStatus = gGantt.createEl("div", "void");
+                voidStatus.innerHTML = "표시할 내용이 없습니다.";
+                this.root.append(voidStatus);
+            }
 
             const dividerFunc = () => {
                 const mousemoveEvent = ({ clientX }) => {
@@ -150,60 +212,6 @@ export const gGantt = {
                     });
                 });
             };
-
-            document.body.append(this.layout.workspace);
-            this.layout.timeline.wrap.append(this.layout.timeline.timeline);
-            this.layout.bars.append(
-                this.layout.timeline.wrap,
-                this.layout.cursor
-            );
-            this.layout.labels.append(fieldName);
-            this.layout.tick.wrap.append(...this.layout.tick.ticks);
-            this.layout.bars.append(this.layout.tick.wrap);
-            this.root.append(this.layout.labels);
-            this.option.useDivider &&
-                this.root.append(this.layout.divider.wrap);
-            this.root.append(this.layout.bars);
-
-            this.option.useCursor &&
-                (() => {
-                    const cursorFunc = ({ clientX }) => {
-                        const { x } = this.layout.bars.getBoundingClientRect();
-                        this.layout.cursor.style.left = clientX - x + "px";
-                    };
-
-                    this.layout.bars.addEventListener("mouseenter", () => {
-                        this.layout.cursor.classList.add("show");
-                        this.root.addEventListener("mousemove", cursorFunc);
-                    });
-
-                    this.layout.bars.addEventListener("mouseleave", () => {
-                        this.layout.cursor.classList.remove("show");
-                        this.root.removeEventListener("mousemove", cursorFunc);
-                    });
-                })();
-
-            const idChecks = [];
-            const data = this.data.filter((group) => {
-                const starts = group.schedule
-                    .map((x) => +new Date(x.start))
-                    .filter((x) => x < gGantt.nextMidnight);
-                const ends = group.schedule
-                    .map((x) => +new Date(x.end))
-                    .filter((x) => x > gGantt.lastMidnight);
-                const idCheck = (id) => {
-                    if (idChecks.includes(id)) {
-                        throw new TypeError(
-                            id + ": ID값은 중복될 수 없습니다."
-                        );
-                    } else {
-                        idChecks.push(id);
-                    }
-                };
-                idCheck(group.id);
-                group.schedule.forEach((x) => idCheck(x.id));
-                return !!starts.length && !!ends.length;
-            });
 
             const getChild = (schedule) => {
                 let childData = schedule;
@@ -466,24 +474,3 @@ export const gGantt = {
 
 window.gGantt = gGantt;
 export default gGantt;
-
-const queue = new gGantt.Chart(
-    document.querySelector("#ggantt-queue"),
-    sampleData,
-    {
-        displayMode: "queue",
-    }
-);
-const group = new gGantt.Chart(
-    document.querySelector("#ggantt-group"),
-    sampleData
-);
-const separated = new gGantt.Chart(
-    document.querySelector("#ggantt-separated"),
-    sampleData,
-    {
-        displayMode: "separated",
-    }
-);
-
-window.sample = { queue, group, separated };
