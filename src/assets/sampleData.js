@@ -1,3 +1,12 @@
+const date = new Date();
+const today = new Date().toISOString().split("T")[0];
+const yesterday = new Date(date.setDate(date.getDate() - 1))
+    .toISOString()
+    .split("T")[0];
+const tomorrow = new Date(date.setDate(date.getDate() + 1))
+    .toISOString()
+    .split("T")[0];
+
 const sampleData = [
     {
         title: "일정그룹 A~B",
@@ -6,14 +15,14 @@ const sampleData = [
             {
                 title: "일정 A",
                 id: "0B",
-                start: "2022-07-07 03:00:00",
-                end: "2022-07-07 05:00:00",
+                start: `${today} 03:00:00`,
+                end: `${today} 05:00:00`,
             },
             {
                 title: "일정 B",
                 id: "0A",
-                start: "2022-07-07 12:00:00",
-                end: "2022-07-07 15:00:00",
+                start: `${today} 12:00:00`,
+                end: `${today} 15:00:00`,
             },
         ],
     },
@@ -24,20 +33,20 @@ const sampleData = [
             {
                 title: "일정 C",
                 id: "1A",
-                start: "2022-07-07 00:00:00",
-                end: "2022-07-07 04:00:00",
+                start: `${today} 00:00:00`,
+                end: `${today} 04:00:00`,
             },
             {
                 title: "일정 D",
                 id: "1Aaa",
-                start: "2022-07-07 05:00:00",
-                end: "2022-07-07 10:00:00",
+                start: `${today} 05:00:00`,
+                end: `${today} 10:00:00`,
             },
             {
                 title: "일정 E",
                 id: "1B",
-                start: "2022-07-07 10:00:00",
-                end: "2022-07-07 15:00:00",
+                start: `${today} 10:00:00`,
+                end: `${today} 15:00:00`,
             },
         ],
     },
@@ -48,20 +57,20 @@ const sampleData = [
             {
                 title: "일정 F",
                 id: "2asdfA",
-                start: "2022-07-07 04:00",
-                end: "2022-07-07 10:00",
+                start: `${today} 04:00`,
+                end: `${today} 10:00`,
             },
             {
                 title: "일정 G",
                 id: "2B",
-                start: "2022-07-07 10:30",
-                end: "2022-07-07 19:00",
+                start: `${today} 10:30`,
+                end: `${today} 19:00`,
             },
             {
                 title: "일정 H",
                 id: "2asdA",
-                start: "2022-07-06 22:00",
-                end: "2022-07-07 02:00",
+                start: `${yesterday} 22:00`,
+                end: `${today} 02:00`,
             },
         ],
     },
@@ -72,14 +81,14 @@ const sampleData = [
             {
                 title: "일정 I",
                 id: "3A",
-                start: "2022-07-07 07:30",
-                end: "2022-07-07 14:00",
+                start: `${today} 07:30`,
+                end: `${today} 14:00`,
             },
             {
                 title: "일정 J",
                 id: "3B",
-                start: "2022-07-07 15:30",
-                end: "2022-07-08 20:00",
+                start: `${today} 15:30`,
+                end: `${tomorrow} 20:00`,
             },
         ],
     },
