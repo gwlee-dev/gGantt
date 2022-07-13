@@ -72,6 +72,10 @@
         white-space: nowrap;
     }
 
+    .ggantt-tick {
+        flex: 1 0 0%;
+    }
+
     .ggantt-status-running {
         background-color: #0d6efd;
         animation: blink ease-out 2s infinite;
@@ -143,6 +147,13 @@
         border-right: 1px solid #dee2e6;
     }
 
+    .ggantt-label-area,
+    .ggantt-divider-wrap,
+    .ggantt-divider {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
     .ggantt-divider-wrap {
         padding: 0 0.5rem;
         .ggantt-divider {
@@ -162,13 +173,6 @@
 
     .ggantt-field {
         font-weight: 700;
-    }
-
-    .ggantt-label-area,
-    .ggantt-divider-wrap,
-    .ggantt-divider {
-        flex: 0 0 auto;
-        width: auto;
     }
 
     .ggantt-void {

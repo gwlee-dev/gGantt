@@ -12,7 +12,6 @@ export const view = async () => {
                 pretty: true,
             })
         )
-        .pipe(dest(PATH.pug.dest, { sourcemaps: "." }))
         .on("error", (e) => logger.failed("write", e))
         .on("end", () => {
             logger.success("PUG");

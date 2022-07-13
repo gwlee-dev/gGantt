@@ -89,7 +89,7 @@ export const gGantt = {
                 tick: {
                     wrap: gGantt.createEl("div", "tick-wrap"),
                     ticks: [...Array(24)].map((x, index) => {
-                        x = gGantt.createEl("div", "tick", "col");
+                        x = gGantt.createEl("div", "tick");
                         x.innerHTML = index + 1;
                         return x;
                     }),

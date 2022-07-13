@@ -1,10 +1,8 @@
 import sync from "browser-sync";
 import del from "del";
 import { series } from "gulp";
-
 import { assets } from "./_assets";
 import { compressCss, css } from "./_css";
-import { fonts } from "./_fonts";
 import { compressJs, js } from "./_js";
 import { view } from "./_view";
 import { watcher } from "./_watcher";
@@ -23,13 +21,12 @@ const server = async () => {
 
 export const dev = series([server], [watcher]);
 
-export const build = series([clean], [js], [css], [assets], [fonts]);
+export const build = series([clean], [js], [css], [assets]);
 
 export const compress = series(
     [clean],
     [view],
     [compressCss],
     [compressJs],
-    [assets],
-    [fonts]
+    [assets]
 );

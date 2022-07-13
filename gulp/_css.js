@@ -3,7 +3,6 @@ import sync from "browser-sync";
 import cssnano from "cssnano";
 import { src, dest } from "gulp";
 import postcss from "gulp-postcss";
-import purgecss from "gulp-purgecss";
 import rename from "gulp-rename";
 import gulpSass from "gulp-sass";
 import dartSass from "sass";
@@ -25,12 +24,6 @@ export const compressCss = async () => {
         )
         .on("error", (e) => logger.failed("sass", e))
         .pipe(rename(`${FILE_NAME}.css`))
-        .pipe(
-            purgecss({
-                content: ["html/*.html"],
-            })
-        )
-        .on("error", (e) => logger.failed("purgecss", e))
         .pipe(postcss([autoprefixer(), cssnano()]))
         .on("error", (e) => logger.failed("postcss", e))
         .pipe(dest(PATH.css.dest))
