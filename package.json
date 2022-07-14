@@ -14,6 +14,7 @@
     "author": "Geonwoo Lee",
     "main": "index.js",
     "scripts": {
+        "zip": "export DEST=dist/static && babel-node ./node_modules/.bin/gulp compress",
         "build": "export DEST=dist/static && babel-node ./node_modules/.bin/gulp compress",
         "dev:build": "export DEST=client && babel-node ./node_modules/.bin/gulp build",
         "server": "export DEST=client && nodemon --watch ./server --exec babel-node ./server/init.js",

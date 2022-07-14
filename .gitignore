@@ -3,3 +3,5 @@
 /server/ssl/*
 /server/data/*.json
 .env
+/dist
+/client
