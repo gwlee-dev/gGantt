@@ -22,6 +22,7 @@ Options
     fieldTitle: ("HTML String"), // default: "데이터명"
     sortChild: (true || false), // default: true
     useCursor: (true || false), // default: true
+    timeDivision: (int <= 24), // default: 24
 
 Template Keyword Reservation
 
