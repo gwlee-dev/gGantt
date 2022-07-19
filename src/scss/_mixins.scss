@@ -1,0 +1,17 @@
+@mixin truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 100%;
+    }
+    50% {
+        opacity: $blink-opacity;
+    }
+    100% {
+        opacity: 100%;
+    }
+}

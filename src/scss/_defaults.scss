@@ -1,0 +1,14 @@
+.ggantt {
+    *,
+    *::after,
+    *::before {
+        box-sizing: border-box;
+    }
+
+    display: flex;
+    flex-wrap: nowrap;
+
+    [role="button"] {
+        cursor: pointer;
+    }
+}

@@ -1,0 +1,22 @@
+.ggantt-divider-wrap {
+    padding: 0 0.5rem;
+    overflow: visible;
+    position: relative;
+    .ggantt-divider {
+        position: absolute;
+        width: 2px;
+        transition: width ease-in-out 0.1s;
+        background-color: #6c757d;
+        opacity: 0.5;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        height: calc(0.5 * $row-gap + 100%);
+    }
+    &:hover {
+        .ggantt-divider {
+            width: 4px;
+            cursor: col-resize;
+        }
+    }
+}

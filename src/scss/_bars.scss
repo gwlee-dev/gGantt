@@ -1,0 +1,46 @@
+.ggantt-bar {
+    color: $bar-color;
+    font-weight: $bar-font-weight;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 0.5rem;
+    border-radius: $bar-border-radius;
+    height: 100%;
+    transition: width 0.5s ease, opacity 0.5s ease, background-color 0.5s ease;
+
+    &.pending {
+        width: 0 !important;
+        opacity: 0 !important;
+    }
+
+    &.ggantt-pre {
+        border-radius: 0 $bar-border-radius $bar-border-radius 0;
+        &::before {
+            content: "\2190";
+            margin-right: 0.25rem;
+        }
+    }
+
+    &.ggantt-suf {
+        border-radius: $bar-border-radius 0 0 $bar-border-radius;
+        &::after {
+            content: "\2192";
+            margin-left: auto;
+        }
+    }
+}
+
+.ggantt-status-running {
+    background-color: $running-bg;
+    animation: blink ease-out 2s infinite;
+}
+
+.ggantt-status-queued {
+    background-color: $queued-bg;
+}
+
+.ggantt-status-done {
+    background-color: $done-bg;
+    opacity: 50%;
+}
