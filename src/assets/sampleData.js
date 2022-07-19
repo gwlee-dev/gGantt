@@ -11,12 +11,19 @@ const sampleData = [
     {
         title: "일정그룹 A~B",
         id: "0",
+        test: "테스트중",
+        status: "실행예정",
         schedule: [
             {
                 title: "일정 A",
                 id: "0B",
                 start: `${today} 03:00:00`,
                 end: `${today} 05:00:00`,
+                data: {
+                    one: "한놈",
+                    two: "두식이",
+                    three: "석삼",
+                },
             },
             {
                 title: "일정 B",

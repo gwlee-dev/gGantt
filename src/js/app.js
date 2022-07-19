@@ -24,6 +24,7 @@ export const gGantt = {
             useCursor: true,
             timeDivision: 24,
             useRowBorder: true,
+            customKeywords: false,
         };
 
         constructor(root, data, userOption) {
@@ -45,31 +46,30 @@ export const gGantt = {
 
         created = [];
 
-        htmlReplacer = (html, name, start, end) => {
+        htmlReplacer = (source, obj, start, end) => {
             const guide = {
-                title: name,
+                title: obj.title,
                 start,
-                startDate: new Date(start).toLocaleDateString(),
                 startYear: new Date(start).getFullYear(),
                 startMonth: new Date(start).getMonth() + 1,
                 startDay: new Date(start).getDay(),
-                startTime: new Date(start).toLocaleTimeString(),
-                startGMT: new Date(start).toTimeString(),
                 startHour: new Date(start).getHours(),
                 startMinute: new Date(start).getMinutes(),
                 startSecond: new Date(start).getSeconds(),
                 end,
-                endDate: new Date(end).toLocaleDateString(),
                 endYear: new Date(end).getFullYear(),
                 endMonth: new Date(end).getMonth() + 1,
                 endDay: new Date(end).getDay(),
-                endTime: new Date(end).toLocaleTimeString(),
-                endGMT: new Date(end).toTimeString(),
                 endHour: new Date(end).getHours(),
                 endMinute: new Date(end).getMinutes(),
                 endSecond: new Date(end).getSeconds(),
             };
-            let newData = html;
+            if (this.option.customKeywords) {
+                const keywords = {};
+                this.option.customKeywords(obj, keywords);
+                Object.assign(guide, keywords);
+            }
+            let newData = source;
             Object.keys(guide).forEach((x) => {
                 const regexpString = `@ggantt:${x}@`;
                 const regexp = new RegExp(regexpString, "g");
@@ -225,12 +225,7 @@ export const gGantt = {
                         (a, b) => new Date(a.start) - new Date(b.start)
                     ));
                 return childData.map((child) => {
-                    const obj = this.createBar(
-                        child.title,
-                        +new Date(child.start),
-                        +new Date(child.end),
-                        child.id
-                    );
+                    const obj = this.createBar(child);
                     obj.barWrap = this.template.barWrap.cloneNode();
                     obj.barWrap.append(obj.bar);
                     return obj;
@@ -257,12 +252,7 @@ export const gGantt = {
                     const latest = Math.max(
                         ...group.schedule.map((item) => +new Date(item.end))
                     );
-                    const groupBar = this.createBar(
-                        group.title,
-                        earliest,
-                        latest,
-                        group.id
-                    );
+                    const groupBar = this.createBar(group, earliest, latest);
                     groupBar.barWrap = this.template.barWrap.cloneNode();
                     groupBar.barWrap.id = `ggantt-group-${this.id}${group.id}`;
                     groupBar.barWrap.append(groupBar.bar);
@@ -345,7 +335,7 @@ export const gGantt = {
                     const labelBind = this.option.labelTemplate
                         ? this.htmlReplacer(
                               this.option.labelTemplate,
-                              group.title,
+                              group,
                               earliest,
                               latest
                           )
@@ -356,12 +346,7 @@ export const gGantt = {
                     label.setAttribute("for", `#ggantt-${this.id}${group.id}`);
 
                     const objs = group.schedule.map((child) => {
-                        const obj = this.createBar(
-                            child.title,
-                            +new Date(child.start),
-                            +new Date(child.end),
-                            child.id
-                        );
+                        const obj = this.createBar(child);
                         return obj.bar;
                     });
 
@@ -426,7 +411,11 @@ export const gGantt = {
             this.option.useDivider && dividerFunc();
         };
 
-        createBar = (name, start, end, id) => {
+        createBar = (obj, customStart, customEnd) => {
+            const { title: name, id } = obj;
+            const start = customStart || +new Date(obj.start);
+            const end = customEnd || +new Date(obj.end);
+
             if (start > end) {
                 throw new TypeError(
                     name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다."
@@ -459,7 +448,7 @@ export const gGantt = {
             this.option.showRange && bar.append(` ${str}`);
 
             const labelBind = this.option.labelTemplate
-                ? this.htmlReplacer(this.option.labelTemplate, name, start, end)
+                ? this.htmlReplacer(this.option.labelTemplate, obj, start, end)
                 : name;
 
             const label = gGantt.createEl("div", "label");

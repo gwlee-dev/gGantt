@@ -6,47 +6,44 @@ Usage
 
 Method
 
-    chartObj.init() // initialize chart
+    chartObj.init()
 
 Options
 
-    autoInitialize: (true || false), // default: true
-    displayMode: ("queue" || "group" || "separated"), // default: "group"
-    showRange: (true || false), // default: false
-    useTooltip: (true || false), // default: true
-    tooltipPlacement: ("top" || "bottom"), // default: bottom
-    useTimeline: (true || false), // default: true
-    useDivider: true, // default: true
-    tooltipTemplate: ("HTML String" || false), // default: false
-    labelTemplate: ("HTML String" || false), // default: false
-    fieldTitle: ("HTML String"), // default: "데이터명"
-    sortChild: (true || false), // default: true
-    useCursor: (true || false), // default: true
-    timeDivision: (int <= 24), // default: 24
-    useRowBorder: (true || false), // default: true
+    autoInitialize: (true || false), // 기본값: true
+    displayMode: ("queue" || "group" || "separated"), // 기본값: "group"
+    showRange: (true || false), // 기본값: false
+    useTooltip: (true || false), // 기본값: true
+    tooltipPlacement: ("top" || "bottom"), // 기본값: bottom
+    useTimeline: (true || false), // 기본값: true
+    useDivider: true, // 기본값: true
+    tooltipTemplate: ("HTML String" || false), // 기본값: false
+    labelTemplate: ("HTML String" || false), // 기본값: false
+    fieldTitle: ("HTML String"), // 기본값: "데이터명"
+    sortChild: (true || false), // 기본값: true
+    useCursor: (true || false), // 기본값: true
+    timeDivision: (int <= 24), // 기본값: 24
+    useRowBorder: (true || false), // 기본값: true
+    customKeywords:
+        (source, keywords) => { keywords.boo = source.poo; } // 기본값: false
 
 Template Keyword Reservation
 
     Usage: @ggantt:keyword@
 
+    // boo: poo
     제목: title
     시작 타임스탬프: start
-    시작 일자: startDate
     시작 년: startYear
     시작 월: startMonth
     시작 일: startDay
-    시작 시간: startTime
-    시작 GMT시간: startGMT
     시작 시: startHour
     시작 분: startMinute
     시작 초: startSecond
     종료 타임스탬프: end
-    종료 일자: endDate
     종료 년: endYear
     종료 월: endMonth
     종료 일: endDay
-    종료 GMT시간: endGMT
-    종료 시간: endTime
     종료 시: endHour
     종료 분: endMinute
     종료 초: endSecond

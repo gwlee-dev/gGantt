@@ -14,7 +14,7 @@
     --ggantt-hover-bg: #f6f7f8;
     --ggantt-bar-border-radius: 0.375rem;
     --ggantt-bar-area-min-width: 43rem;
-    --ggantt-header-bg: #f6f7f8;
+    --ggantt-header-bg: #{rgba(#6c757d, 0.13)};
 }
 
 $row-height: var(--ggantt-row-height);
