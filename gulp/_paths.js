@@ -15,7 +15,7 @@ export const PATH = {
         dest: `${DEST}/js`,
     },
     assets: {
-        src: `${SRC}/assets/**/*`,
+        src: `${SRC}/assets`,
         dest: `${DEST}/assets`,
     },
 };

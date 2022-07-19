@@ -14,10 +14,11 @@
     "author": "Geonwoo Lee",
     "main": "index.js",
     "scripts": {
-        "zip": "export DEST=dist/static && babel-node ./node_modules/.bin/gulp compress",
-        "build": "export DEST=dist/static && babel-node ./node_modules/.bin/gulp compress",
-        "dev:build": "export DEST=client && babel-node ./node_modules/.bin/gulp build",
-        "server": "export DEST=client && nodemon --watch ./server --exec babel-node ./server/init.js",
+        "zip": "babel-node ./node_modules/.bin/gulp compress",
+        "tooltip": "babel-node ./node_modules/.bin/gulp tooltip",
+        "build": "babel-node ./node_modules/.bin/gulp compress",
+        "dev:build": "babel-node ./node_modules/.bin/gulp build",
+        "server": "nodemon --watch ./server --exec babel-node ./server/init.js",
         "watch": "npm run dev:build && babel-node ./node_modules/.bin/gulp dev",
         "eslint": "npx eslint ./ --fix",
         "stylelint": "npx stylelint ./**/*.scss --fix"
@@ -26,6 +27,7 @@
         "@babel/core": "^7.17.12",
         "@babel/node": "^7.17.10",
         "@babel/preset-env": "^7.17.12",
+        "bootstrap": "^5.1.3",
         "dotenv": "^16.0.1",
         "express": "^4.18.1",
         "morgan": "^1.10.0",

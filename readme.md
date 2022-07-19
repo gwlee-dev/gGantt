@@ -12,7 +12,6 @@ Options
 
     autoInitialize: (true || false), // default: true
     displayMode: ("queue" || "group" || "separated"), // default: "group"
-    tickPositionBottom: (true || false), // default: false
     showRange: (true || false), // default: false
     useTooltip: (true || false), // default: true
     tooltipPlacement: ("top" || "bottom"), // default: bottom
@@ -26,7 +25,7 @@ Options
 
 Template Keyword Reservation
 
-    Usage: @ggantt:#[i keyword] @
+    Usage: @ggantt:keyword@
 
     제목: title
     시작 타임스탬프: start

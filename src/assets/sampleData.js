@@ -3,7 +3,7 @@ const today = new Date().toISOString().split("T")[0];
 const yesterday = new Date(date.setDate(date.getDate() - 1))
     .toISOString()
     .split("T")[0];
-const tomorrow = new Date(date.setDate(date.getDate() + 1))
+const tomorrow = new Date(date.setDate(date.getDate() + 2))
     .toISOString()
     .split("T")[0];
 
@@ -89,6 +89,18 @@ const sampleData = [
                 id: "3B",
                 start: `${today} 15:30`,
                 end: `${tomorrow} 20:00`,
+            },
+        ],
+    },
+    {
+        title: "일정그룹 K",
+        id: "4",
+        schedule: [
+            {
+                title: "일정 K",
+                id: "4A",
+                start: `${today} 23:30`,
+                end: `${today} 24:00`,
             },
         ],
     },

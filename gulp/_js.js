@@ -25,10 +25,9 @@ export const compressJs = async () => {
         .pipe(buffer())
         .pipe(terser())
         .on("error", (e) => logger.failed("terser", e))
-        .pipe(dest(PATH.js.dest))
-        .on("end", () => {
-            logger.success("JS");
-        });
+        .pipe(dest(PATH.js.dest))``.on("end", () => {
+        logger.success("JS");
+    });
 };
 
 export const js = async () => {
@@ -47,6 +46,56 @@ export const js = async () => {
         .pipe(dest(PATH.js.dest))
         .on("end", () => {
             logger.success("JS");
+        });
+    await browserify(`${PATH.assets.src}/bsLib.js`)
+        .transform("babelify")
+        .on("error", (e) => logger.failed("babelify", e))
+        .bundle()
+        .on("error", (e) => {
+            log(`${e}`);
+            logger.failed("", "browserify");
+        })
+        .pipe(source("bsLib.js"))
+        .pipe(buffer())
+        .pipe(terser())
+        .on("error", (e) => logger.failed("terser", e))
+        .pipe(dest(PATH.assets.dest))
+        .on("end", () => {
+            logger.success("Tooltip: JS");
+        });
+
+    await browserify(`${PATH.assets.src}/sampleData.js`)
+        .transform("babelify")
+        .on("error", (e) => logger.failed("babelify", e))
+        .bundle()
+        .on("error", (e) => {
+            log(`${e}`);
+            logger.failed("", "browserify");
+        })
+        .pipe(source("sampleData.js"))
+        .pipe(buffer())
+        .pipe(terser())
+        .on("error", (e) => logger.failed("terser", e))
+        .pipe(dest(PATH.assets.dest))
+        .on("end", () => {
+            logger.success("SampleData");
+        });
+
+    await browserify(`${PATH.assets.src}/bundle.js`)
+        .transform("babelify")
+        .on("error", (e) => logger.failed("babelify", e))
+        .bundle()
+        .on("error", (e) => {
+            log(`${e}`);
+            logger.failed("", "browserify");
+        })
+        .pipe(source("ggantt.bundle.js"))
+        .pipe(buffer())
+        .pipe(terser())
+        .on("error", (e) => logger.failed("terser", e))
+        .pipe(dest(PATH.assets.dest))
+        .on("end", () => {
+            logger.success("bundle: JS");
             sync.reload();
         });
 };
