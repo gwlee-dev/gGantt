@@ -1,26 +1,53 @@
+.ggantt {
+    position: relative;
+    &::before {
+        content: "";
+        width: 100%;
+        background-color: $header-bg;
+        position: absolute;
+        z-index: -1;
+    }
+}
+
+.ggantt::before,
 .ggantt-field,
 .ggantt-label,
-.ggantt-bar-wrap {
-    height: $row-height;
+.ggantt-bar-wrap,
+.ggantt-bar-area::before,
+.ggantt-field .ggantt-text,
+.ggantt-tick .ggantt-text {
+    height: calc($row-height + $row-gap);
 }
 
 .ggantt-label,
 .ggantt-bar-wrap {
     position: relative;
-    &:after {
+    &::after {
         content: "";
         position: absolute;
         z-index: -1;
         width: 100%;
-        height: 1px;
-        top: calc(-0.5 * $row-gap);
+        height: 100%;
+        top: 0;
         left: 0;
-        background-color: var(--ggantt-line-color);
     }
+
     &.hover::after {
-        height: calc(100% + $row-gap);
+        background-color: $hover-bg;
     }
-    margin-bottom: $row-gap;
+}
+
+.ggantt-row-border {
+    &::before {
+        border-bottom: 1px solid $line-color;
+    }
+    .ggantt-label,
+    .ggantt-bar-wrap {
+        &:after {
+            height: calc(100% + 1px) !important;
+            border-top: 1px solid $line-color;
+        }
+    }
 }
 
 .ggantt-bar-wrap {
@@ -48,7 +75,6 @@
     overflow-y: hidden;
     &::before {
         content: "";
-        height: $row-height;
     }
 }
 
@@ -56,6 +82,10 @@
 .ggantt-bar {
     display: flex;
     align-items: center;
+}
+
+.ggantt-text {
+    padding: 0 0.5rem;
 }
 
 .ggantt-text,
@@ -84,7 +114,16 @@
 }
 
 .ggantt-field,
-.ggantt-bar-area::before {
-    border-bottom: 2px solid $divider-color inset;
-    margin-bottom: 3px;
+.ggantt-tick {
+    .ggantt-text {
+        display: flex;
+        align-items: center;
+        margin-bottom: auto;
+        line-height: 1rem;
+    }
+}
+
+.ggantt-tick {
+    display: flex;
+    justify-content: flex-end;
 }

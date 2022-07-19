@@ -10,10 +10,11 @@
     --ggantt-queued-bg: #6c757d;
     --ggantt-done-bg: #198754;
     --ggantt-timeline-color: #ffc107;
-    --ggantt-line-color: #{rgba(#212529, 0.1)};
+    --ggantt-line-color: #dcdedf;
+    --ggantt-hover-bg: #f6f7f8;
     --ggantt-bar-border-radius: 0.375rem;
     --ggantt-bar-area-min-width: 43rem;
-    --ggantt-header-border-width: 2px;
+    --ggantt-header-bg: #f6f7f8;
 }
 
 $row-height: var(--ggantt-row-height);
@@ -28,6 +29,7 @@ $queued-bg: var(--ggantt-queued-bg);
 $done-bg: var(--ggantt-done-bg);
 $timeline-color: var(--ggantt-timeline-color);
 $line-color: var(--ggantt-line-color);
+$hover-bg: var(--ggantt-hover-bg);
 $bar-border-radius: var(--ggantt-bar-border-radius);
 $bar-area-min-width: var(--ggantt-bar-area-min-width);
-$header-border-width: var(--ggantt-header-border-width);
+$header-bg: var(--ggantt-header-bg);

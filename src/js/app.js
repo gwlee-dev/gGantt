@@ -23,6 +23,7 @@ export const gGantt = {
             sortChild: true,
             useCursor: true,
             timeDivision: 24,
+            useRowBorder: true,
         };
 
         constructor(root, data, userOption) {
@@ -42,7 +43,7 @@ export const gGantt = {
             bar: gGantt.createEl("div", "bar", "pending"),
         };
 
-        createdBars = [];
+        created = [];
 
         htmlReplacer = (html, name, start, end) => {
             const guide = {
@@ -90,8 +91,10 @@ export const gGantt = {
                     ticks: [...Array(this.option.timeDivision)].map(
                         (x, index) => {
                             x = gGantt.createEl("div", "tick");
-                            x.innerHTML =
+                            const span = gGantt.createEl("span", "text");
+                            span.innerHTML =
                                 (24 / this.option.timeDivision) * (index + 1);
+                            x.append(span);
                             return x;
                         }
                     ),
@@ -106,6 +109,8 @@ export const gGantt = {
             };
 
             this.root.classList.add("ggantt");
+            this.option.useRowBorder &&
+                this.root.classList.add("ggantt-row-border");
 
             const idChecks = [];
             const data = this.data.filter((group) => {
@@ -131,7 +136,9 @@ export const gGantt = {
 
             if (data.length) {
                 const fieldName = gGantt.createEl("div", "field");
-                fieldName.innerHTML = this.option.fieldTitle;
+                const span = gGantt.createEl("span", "text");
+                span.innerHTML = this.option.fieldTitle;
+                fieldName.append(span);
 
                 this.layout.divider.wrap.append(this.layout.divider.divider);
 
@@ -396,20 +403,20 @@ export const gGantt = {
                     });
                 };
 
-                this.runningBars = bindClass(
-                    this.createdBars.filter(
+                this.running = bindClass(
+                    this.created.filter(
                         (obj) => obj.start < now && obj.end > now
                     ),
                     "running"
                 );
-                this.doneBars = bindClass(
-                    this.createdBars.filter(
+                this.done = bindClass(
+                    this.created.filter(
                         (obj) => obj.start < now && obj.end < now
                     ),
                     "done"
                 );
-                this.queuedBars = bindClass(
-                    this.createdBars.filter((obj) => obj.start > now),
+                this.queued = bindClass(
+                    this.created.filter((obj) => obj.start > now),
                     "queued"
                 );
             };
@@ -499,7 +506,7 @@ export const gGantt = {
                 bar.addEventListener("mouseleave", () => {
                     instance.hide();
                 });
-                this.createdBars.push({ bar, start, end });
+                this.created.push({ bar, start, end });
             }
 
             return { bar, label };

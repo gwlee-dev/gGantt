@@ -4,9 +4,8 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    padding: 0 0.5rem;
     border-radius: $bar-border-radius;
-    height: 100%;
+    height: calc(100% - $row-gap);
     transition: width 0.5s ease, opacity 0.5s ease, background-color 0.5s ease;
 
     &.pending {
@@ -18,7 +17,7 @@
         border-radius: 0 $bar-border-radius $bar-border-radius 0;
         &::before {
             content: "\2190";
-            margin-right: 0.25rem;
+            margin-left: 0.25rem;
         }
     }
 
@@ -26,6 +25,7 @@
         border-radius: $bar-border-radius 0 0 $bar-border-radius;
         &::after {
             content: "\2192";
+            margin-right: 0.25rem;
             margin-left: auto;
         }
     }

@@ -23,6 +23,7 @@ Options
     sortChild: (true || false), // default: true
     useCursor: (true || false), // default: true
     timeDivision: (int <= 24), // default: 24
+    useRowBorder: (true || false), // default: true
 
 Template Keyword Reservation
 
