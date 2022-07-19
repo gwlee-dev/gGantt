@@ -1,19 +1,35 @@
 .ggantt {
-    $ggantt-row-height: 1.75rem;
-    $ggantt-row-gap: 0.5rem;
-    $ggantt-blink-opacity: 75%;
-    $ggantt-hover-bg: #6c757d;
-    $ggantt-collapse-bg: rgba(#6c757d, 0.1);
-    $ggantt-bar-color: #fff;
-    $ggantt-bar-font-weight: 700;
-    $ggantt-field-font-weight: 700;
-    $ggantt-running-bg: #0d6efd;
-    $ggantt-queued-bg: #6c757d;
-    $ggantt-done-bg: #198754;
-    $ggantt-timeline-color: #ffc107;
-    $ggantt-line-color: #dee2e6;
-    $ggantt-bar-border-radius: 0.375rem;
-    $ggantt-bar-area-min-width: 43rem;
+    --ggantt-row-height: 1.75rem;
+    --ggantt-row-gap: 0.5rem;
+    --ggantt-blink-opacity: 75%;
+    --ggantt-hover-bg: #6c757d;
+    --ggantt-collapse-bg: rgba(#6c757d, 0.1);
+    --ggantt-bar-color: #fff;
+    --ggantt-bar-font-weight: 500;
+    --ggantt-field-font-weight: 700;
+    --ggantt-running-bg: #0d6efd;
+    --ggantt-queued-bg: #6c757d;
+    --ggantt-done-bg: #198754;
+    --ggantt-timeline-color: #ffc107;
+    --ggantt-line-color: #dee2e6;
+    --ggantt-bar-border-radius: 0.375rem;
+    --ggantt-bar-area-min-width: 43rem;
+
+    $ggantt-row-height: var(--ggantt-row-height);
+    $ggantt-row-gap: var(--ggantt-row-gap);
+    $ggantt-blink-opacity: var(--ggantt-blink-opacity);
+    $ggantt-hover-bg: var(--ggantt-hover-bg);
+    $ggantt-collapse-bg: var(--ggantt-collapse-bg);
+    $ggantt-bar-color: var(--ggantt-bar-color);
+    $ggantt-bar-font-weight: var(--ggantt-bar-font-weight);
+    $ggantt-field-font-weight: var(--ggantt-field-font-weight);
+    $ggantt-running-bg: var(--ggantt-running-bg);
+    $ggantt-queued-bg: var(--ggantt-queued-bg);
+    $ggantt-done-bg: var(--ggantt-done-bg);
+    $ggantt-timeline-color: var(--ggantt-timeline-color);
+    $ggantt-line-color: var(--ggantt-line-color);
+    $ggantt-bar-border-radius: var(--ggantt-bar-border-radius);
+    $ggantt-bar-area-min-width: var(--ggantt-bar-area-min-width);
 
     @mixin truncate {
         overflow: hidden;
