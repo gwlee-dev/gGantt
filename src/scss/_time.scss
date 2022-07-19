@@ -11,9 +11,6 @@
     padding-right: 0.25rem;
     position: relative;
     border-right: 1px solid $line-color;
-    &:first-child {
-        border-left: 1px solid $line-color;
-    }
 }
 
 .ggantt-timeline-wrap,

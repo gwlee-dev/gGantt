@@ -6,8 +6,7 @@
         position: absolute;
         width: 2px;
         transition: width ease-in-out 0.1s;
-        background-color: #6c757d;
-        opacity: 0.5;
+        background-color: $divider-color;
         top: 0;
         left: 50%;
         transform: translateX(-50%);

@@ -2,7 +2,7 @@
     --ggantt-row-height: 1.75rem;
     --ggantt-row-gap: 0.5rem;
     --ggantt-blink-opacity: 75%;
-    --ggantt-hover-bg: #6c757d;
+    --ggantt-divider-color: #{rgba(#6c757d, 0.5)};
     --ggantt-bar-color: #fff;
     --ggantt-bar-font-weight: 500;
     --ggantt-field-font-weight: 700;
@@ -13,12 +13,13 @@
     --ggantt-line-color: #{rgba(#212529, 0.1)};
     --ggantt-bar-border-radius: 0.375rem;
     --ggantt-bar-area-min-width: 43rem;
+    --ggantt-header-border-width: 2px;
 }
 
 $row-height: var(--ggantt-row-height);
 $row-gap: var(--ggantt-row-gap);
 $blink-opacity: var(--ggantt-blink-opacity);
-$hover-bg: var(--ggantt-hover-bg);
+$divider-color: var(--ggantt-divider-color);
 $bar-color: var(--ggantt-bar-color);
 $bar-font-weight: var(--ggantt-bar-font-weight);
 $field-font-weight: var(--ggantt-field-font-weight);
@@ -29,3 +30,4 @@ $timeline-color: var(--ggantt-timeline-color);
 $line-color: var(--ggantt-line-color);
 $bar-border-radius: var(--ggantt-bar-border-radius);
 $bar-area-min-width: var(--ggantt-bar-area-min-width);
+$header-border-width: var(--ggantt-header-border-width);

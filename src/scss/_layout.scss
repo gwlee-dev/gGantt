@@ -7,7 +7,7 @@
 .ggantt-label,
 .ggantt-bar-wrap {
     position: relative;
-    &::after {
+    &:after {
         content: "";
         position: absolute;
         z-index: -1;
@@ -20,6 +20,7 @@
     &.hover::after {
         height: calc(100% + $row-gap);
     }
+    margin-bottom: $row-gap;
 }
 
 .ggantt-bar-wrap {
@@ -35,7 +36,6 @@
     flex: 1 1 auto;
     flex-direction: column;
     align-self: stretch;
-    gap: $row-gap;
 }
 
 .ggantt-label-area {
@@ -48,13 +48,8 @@
     overflow-y: hidden;
     &::before {
         content: "";
-        padding-top: $row-height;
+        height: $row-height;
     }
-}
-
-.ggantt-label-area,
-.ggantt-bar-area {
-    padding-bottom: calc(0.5 * $row-gap);
 }
 
 .ggantt-label,
@@ -86,4 +81,10 @@
 
 .ggantt-tooltip {
     position: absolute;
+}
+
+.ggantt-field,
+.ggantt-bar-area::before {
+    border-bottom: 2px solid $divider-color inset;
+    margin-bottom: 3px;
 }
