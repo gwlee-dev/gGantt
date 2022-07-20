@@ -22,7 +22,7 @@
 
 .ggantt::before,
 .ggantt-field,
-.ggantt-label,
+.ggantt-label:not(.compare),
 .ggantt-bar-wrap,
 .ggantt-bar-area::before,
 .ggantt-field .ggantt-text,
@@ -76,6 +76,14 @@
         &:after {
             height: calc(100% + 1px) !important;
             border-top: 1px solid $line-color;
+        }
+    }
+}
+
+.ggantt-row-border.ggantt-compare {
+    .ggantt-bar-wrap:nth-child(odd) {
+        &:after {
+            border-top: none;
         }
     }
 }

@@ -54,7 +54,6 @@ export const gGantt = {
         const labelSpan = gGantt.createEl("span", "text");
         labelSpan.innerHTML = labelBind;
         label.append(labelSpan);
-        label.setAttribute("for", `#ggantt-${that.id}${id}`);
 
         if (that.option.useTooltip) {
             if (typeof window.bootstrap !== "undefined") {
@@ -87,8 +86,8 @@ export const gGantt = {
                 bar.addEventListener(
                     "mousemove",
                     ({ clientX: x, clientY: y }) => {
-                        tooltipWrap.style.left = x + "px";
-                        tooltipWrap.style.top = y + "px";
+                        tooltipWrap.style.left = window.scrollX + x + "px";
+                        tooltipWrap.style.top = window.scrollY + y + "px";
                         instance.update();
                     }
                 );
@@ -317,7 +316,8 @@ export const gGantt = {
             const getChild = (schedule) => {
                 let childData = schedule;
                 this.option.sortChild &&
-                    (childData = schedule.sort(
+                    this.option.displayMode !== "compare" &&
+                    (childData = [...schedule].sort(
                         (a, b) => new Date(a.start) - new Date(b.start)
                     ));
                 return childData.map((child) => {
@@ -417,6 +417,43 @@ export const gGantt = {
                 }
             }
 
+            if (this.option.displayMode === "compare") {
+                data.forEach((group) => {
+                    this.root.classList.add("ggantt-compare");
+                    const earliest = Math.min(
+                        ...group.schedule.map((item) => +new Date(item.start))
+                    );
+                    const latest = Math.max(
+                        ...group.schedule.map((item) => +new Date(item.end))
+                    );
+
+                    const label = gGantt.createEl("div", "label", "compare");
+                    const labelBind = this.option.labelTemplate
+                        ? gGantt.htmlReplacer(
+                              this.option.customKeywords,
+                              this.option.labelTemplate,
+                              group,
+                              earliest,
+                              latest
+                          )
+                        : group.title;
+                    const labelSpan = gGantt.createEl("span", "text");
+                    labelSpan.innerHTML = labelBind;
+                    label.append(labelSpan);
+
+                    const objs = getChild(group.schedule).slice(0, 2);
+                    Object.keys(objs).forEach((x) =>
+                        hoverSet(label, objs[x].barWrap)
+                    );
+
+                    const bars = objs.map((x) => x.barWrap);
+                    // const labels = objs.map((x) => x.label);
+
+                    this.layout.bars.append(...bars);
+                    this.layout.labels.append(label);
+                });
+            }
+
             if (this.option.displayMode === "separated") {
                 data.forEach((group) => {
                     const objs = getChild(group.schedule);
@@ -453,7 +490,6 @@ export const gGantt = {
                     const labelSpan = gGantt.createEl("span", "text");
                     labelSpan.innerHTML = labelBind;
                     label.append(labelSpan);
-                    label.setAttribute("for", `#ggantt-${this.id}${group.id}`);
 
                     const objs = group.schedule.map((child) => {
                         const obj = gGantt.createBar(this, child);

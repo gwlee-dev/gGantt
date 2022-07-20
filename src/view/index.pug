@@ -30,18 +30,22 @@ html(lang="ko")
         div(style="margin-bottom: 1rem")
             #ggantt-group
         div(style="width: 100%")
+            span displayMode: compare
+        div(style="margin-bottom: 1rem")
+            #ggantt-compare
+        div(style="width: 100%")
             span displayMode: separated
         div(style="margin-bottom: 1rem")
             #ggantt-separated
 
-        //- script(
-        //-     src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js",
-        //-     integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa",
-        //-     crossorigin="anonymous"
-        //- )
+        script(
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js",
+            integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa",
+            crossorigin="anonymous"
+        )
         script(src="static/assets/sampleData.js")
-        //- script(src="static/js/ggantt.js")
-        script(src="static/assets/ggantt.bundle.js")
+        script(src="static/js/ggantt.js")
+        //- script(src="static/assets/ggantt.bundle.js")
         script.
             const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, {
                 displayMode: "queue",
@@ -53,6 +57,9 @@ html(lang="ko")
             });
             const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData, {
                 labelTemplate: "@ggantt:title@",
+            });
+            const double = new gGantt.Chart(document.querySelector("#ggantt-compare"), sampleData, {
+                displayMode: "compare",
             });
             const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, {
                 displayMode: "separated",

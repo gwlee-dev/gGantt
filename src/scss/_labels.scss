@@ -1,3 +1,7 @@
 .ggantt-field {
     font-weight: $field-font-weight;
 }
+
+.ggantt-label.compare {
+    height: calc(($row-height + $row-gap) * 2) !important;
+}

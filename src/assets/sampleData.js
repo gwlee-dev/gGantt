@@ -100,13 +100,19 @@ const sampleData = [
         ],
     },
     {
-        title: "일정그룹 K",
+        title: "일정그룹 K~L",
         id: "4",
         schedule: [
             {
                 title: "일정 K",
                 id: "4A",
-                start: `${today} 23:30`,
+                start: `${today} 22:30`,
+                end: `${today} 23:40`,
+            },
+            {
+                title: "일정 L",
+                id: "4B",
+                start: `${today} 22:30`,
                 end: `${today} 24:00`,
             },
         ],

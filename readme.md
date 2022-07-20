@@ -58,23 +58,23 @@ Browser: `<script src="/ggantt.js"></script>`
 
 ## 사용 가능한 옵션
 
-| 옵션               | 가능한 값                    | 기본값     | 설명                                            |
-| ------------------ | ---------------------------- | ---------- | ----------------------------------------------- |
-| `autoInitialize`   | `true, false`                | `true`     | 인스턴스 생성 후 자동실행 여부                  |
-| `displayMode`      | `queue, group, separated`    | `group`    | 화면 출력 모드 변경                             |
-| `showRange`        | `true, false`                | `false`    | bar에 시작 ~ 종류 시간 표시                     |
-| `useTimeline`      | `true, false`                | `true`     | 현재 시간 선 표시 여부                          |
-| `useDivider`       | `true`,                      | `true`     | 좌우 구분선 및 비율 조정기능 사용 여부          |
-| `useTooltip`       | `true, false`                | `true`     | 툴팁 사용 여부                                  |
-| `tooltipPlacement` | `"top", "bottom"`            | `bottom`   | 툴팁 배치 위치                                  |
-| `tooltipTemplate`  | `String, false`              | `false`    | 툴팁 템플릿 사용 여부                           |
-| `labelTemplate`    | `String, false`              | `false`    | 라벨 템플릿 사용 여부                           |
-| `fieldTitle`       | `String`                     | `데이터명` | 좌측 필드명 지정                                |
-| `sortChild`        | `true, false`                | `true`     | 그룹 내 자식요소 정렬 여부 (시작 시간순)        |
-| `useCursor`        | `true, false`                | `true`     | 마우스 호버 시간 선 사용 여부                   |
-| `timeDivision`     | `int (최대 24)`              | `24`       | 표시할 시간 개수 (예: 6 입력시 => 4, 8, 16, 24) |
-| `useRowBorder`     | `true, false`                | `true`     | 행 테두리 표시 여부                             |
-| `customKeywords`   | `function(source, keywords)` | `false`    | 키워드 사용자 정의 (툴팁/라벨 템플릿에서 사용)  |
+| 옵션               | 가능한 값                          | 기본값     | 설명                                            |
+| ------------------ | ---------------------------------- | ---------- | ----------------------------------------------- |
+| `autoInitialize`   | `true, false`                      | `true`     | 인스턴스 생성 후 자동실행 여부                  |
+| `displayMode`      | `queue, group, compare, separated` | `group`    | 화면 출력 모드 변경                             |
+| `showRange`        | `true, false`                      | `false`    | bar에 시작 ~ 종류 시간 표시                     |
+| `useTimeline`      | `true, false`                      | `true`     | 현재 시간 선 표시 여부                          |
+| `useDivider`       | `true`,                            | `true`     | 좌우 구분선 및 비율 조정기능 사용 여부          |
+| `useTooltip`       | `true, false`                      | `true`     | 툴팁 사용 여부                                  |
+| `tooltipPlacement` | `"top", "bottom"`                  | `bottom`   | 툴팁 배치 위치                                  |
+| `tooltipTemplate`  | `String, false`                    | `false`    | 툴팁 템플릿 사용 여부                           |
+| `labelTemplate`    | `String, false`                    | `false`    | 라벨 템플릿 사용 여부                           |
+| `fieldTitle`       | `String`                           | `데이터명` | 좌측 필드명 지정                                |
+| `sortChild`        | `true, false`                      | `true`     | 그룹 내 자식요소 정렬 여부 (시작 시간순)        |
+| `useCursor`        | `true, false`                      | `true`     | 마우스 호버 시간 선 사용 여부                   |
+| `timeDivision`     | `int (최대 24)`                    | `24`       | 표시할 시간 개수 (예: 6 입력시 => 4, 8, 16, 24) |
+| `useRowBorder`     | `true, false`                      | `true`     | 행 테두리 표시 여부                             |
+| `customKeywords`   | `function(source, keywords)`       | `false`    | 키워드 사용자 정의 (툴팁/라벨 템플릿에서 사용)  |
 
 -----------------
 ## 템플릿에서 사용 가능한 키워드
