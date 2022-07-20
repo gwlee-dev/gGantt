@@ -8,6 +8,126 @@ export const gGantt = {
         element.classList.add(...className);
         return element;
     },
+    createBar: (that, obj, customStart, customEnd) => {
+        const { title: name, id } = obj;
+        const start = customStart || +new Date(obj.start);
+        const end = customEnd || +new Date(obj.end);
+
+        if (start > end) {
+            throw new TypeError(
+                name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다."
+            );
+        }
+
+        const alreadyStarted = start < gGantt.lastMidnight;
+        const beContinue = end > gGantt.nextMidnight;
+        let dueOffset = 0;
+        alreadyStarted && (dueOffset = gGantt.lastMidnight - start);
+        const barDuring = ((end - start - dueOffset) / gGantt.dayTime) * 100;
+        const barStart = ((start - gGantt.lastMidnight) / gGantt.dayTime) * 100;
+
+        const bar = that.template.bar.cloneNode();
+        bar.id = `ggantt-${that.id}${id}`;
+
+        !alreadyStarted && (bar.style.left = barStart + "%");
+        alreadyStarted && !beContinue && bar.classList.add("ggantt-pre");
+        !alreadyStarted && beContinue && bar.classList.add("ggantt-suf");
+        bar.style.width = beContinue ? 100 - barStart + "%" : barDuring + "%";
+        const barSpan = gGantt.createEl("span", "text");
+        barSpan.innerHTML = name;
+        bar.append(barSpan);
+        const toStr = (date) => new Date(date).toLocaleString();
+        const str = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
+        that.option.showRange && bar.append(` ${str}`);
+
+        const labelBind = that.option.labelTemplate
+            ? gGantt.htmlReplacer(
+                  that.option.customKeywords,
+                  that.option.labelTemplate,
+                  obj,
+                  start,
+                  end
+              )
+            : name;
+
+        const label = gGantt.createEl("div", "label");
+        const labelSpan = gGantt.createEl("span", "text");
+        labelSpan.innerHTML = labelBind;
+        label.append(labelSpan);
+        label.setAttribute("for", `#ggantt-${that.id}${id}`);
+
+        if (that.option.useTooltip && typeof window.bootstrap !== "undefined") {
+            const tooltipWrap = gGantt.createEl("div", "tooltip");
+            const tooltip = gGantt.createEl("div", "dummy");
+            tooltipWrap.append(tooltip);
+            that.layout.workspace.append(tooltipWrap);
+
+            const tooltipBind = that.option.tooltipTemplate
+                ? gGantt.htmlReplacer(
+                      that.option.customKeywords,
+                      that.option.tooltipTemplate,
+                      obj,
+                      start,
+                      end
+                  )
+                : str;
+
+            const instance = new window.bootstrap.Tooltip(tooltip, {
+                offset: "[10, 20]",
+                trigger: "manual",
+                placement: that.option.tooltipPlacement,
+                container: that.layout.workspace,
+                html: true,
+                title: tooltipBind,
+            });
+            bar.addEventListener("mouseenter", () => {
+                instance.show();
+            });
+            bar.addEventListener("mousemove", ({ clientX: x, clientY: y }) => {
+                tooltipWrap.style.left = x + "px";
+                tooltipWrap.style.top = y + "px";
+                instance.update();
+            });
+
+            bar.addEventListener("mouseleave", () => {
+                instance.hide();
+            });
+            that.created.push({ bar, start, end });
+        }
+
+        return { bar, label };
+    },
+    htmlReplacer: (customKeywords, source, obj, start, end) => {
+        const guide = {
+            title: obj.title,
+            start,
+            startYear: new Date(start).getFullYear(),
+            startMonth: new Date(start).getMonth() + 1,
+            startDay: new Date(start).getDay(),
+            startHour: new Date(start).getHours(),
+            startMinute: new Date(start).getMinutes(),
+            startSecond: new Date(start).getSeconds(),
+            end,
+            endYear: new Date(end).getFullYear(),
+            endMonth: new Date(end).getMonth() + 1,
+            endDay: new Date(end).getDay(),
+            endHour: new Date(end).getHours(),
+            endMinute: new Date(end).getMinutes(),
+            endSecond: new Date(end).getSeconds(),
+        };
+        if (customKeywords) {
+            const keywords = {};
+            customKeywords(obj, keywords);
+            Object.assign(guide, keywords);
+        }
+        let newData = source;
+        Object.keys(guide).forEach((x) => {
+            const regexpString = `@ggantt:${x}@`;
+            const regexp = new RegExp(regexpString, "g");
+            newData = newData.replace(regexp, guide[x]);
+        });
+        return newData;
+    },
     Chart: class {
         option = {
             autoInitialize: true,
@@ -45,38 +165,6 @@ export const gGantt = {
         };
 
         created = [];
-
-        htmlReplacer = (source, obj, start, end) => {
-            const guide = {
-                title: obj.title,
-                start,
-                startYear: new Date(start).getFullYear(),
-                startMonth: new Date(start).getMonth() + 1,
-                startDay: new Date(start).getDay(),
-                startHour: new Date(start).getHours(),
-                startMinute: new Date(start).getMinutes(),
-                startSecond: new Date(start).getSeconds(),
-                end,
-                endYear: new Date(end).getFullYear(),
-                endMonth: new Date(end).getMonth() + 1,
-                endDay: new Date(end).getDay(),
-                endHour: new Date(end).getHours(),
-                endMinute: new Date(end).getMinutes(),
-                endSecond: new Date(end).getSeconds(),
-            };
-            if (this.option.customKeywords) {
-                const keywords = {};
-                this.option.customKeywords(obj, keywords);
-                Object.assign(guide, keywords);
-            }
-            let newData = source;
-            Object.keys(guide).forEach((x) => {
-                const regexpString = `@ggantt:${x}@`;
-                const regexp = new RegExp(regexpString, "g");
-                newData = newData.replace(regexp, guide[x]);
-            });
-            return newData;
-        };
 
         init = () => {
             this.layout = {
@@ -225,7 +313,7 @@ export const gGantt = {
                         (a, b) => new Date(a.start) - new Date(b.start)
                     ));
                 return childData.map((child) => {
-                    const obj = this.createBar(child);
+                    const obj = gGantt.createBar(this, child);
                     obj.barWrap = this.template.barWrap.cloneNode();
                     obj.barWrap.append(obj.bar);
                     return obj;
@@ -252,7 +340,12 @@ export const gGantt = {
                     const latest = Math.max(
                         ...group.schedule.map((item) => +new Date(item.end))
                     );
-                    const groupBar = this.createBar(group, earliest, latest);
+                    const groupBar = gGantt.createBar(
+                        this,
+                        group,
+                        earliest,
+                        latest
+                    );
                     groupBar.barWrap = this.template.barWrap.cloneNode();
                     groupBar.barWrap.id = `ggantt-group-${this.id}${group.id}`;
                     groupBar.barWrap.append(groupBar.bar);
@@ -333,7 +426,8 @@ export const gGantt = {
                     );
                     const label = gGantt.createEl("div", "label");
                     const labelBind = this.option.labelTemplate
-                        ? this.htmlReplacer(
+                        ? gGantt.htmlReplacer(
+                              this.option.customKeywords,
                               this.option.labelTemplate,
                               group,
                               earliest,
@@ -346,7 +440,7 @@ export const gGantt = {
                     label.setAttribute("for", `#ggantt-${this.id}${group.id}`);
 
                     const objs = group.schedule.map((child) => {
-                        const obj = this.createBar(child);
+                        const obj = gGantt.createBar(this, child);
                         return obj.bar;
                     });
 
@@ -409,96 +503,6 @@ export const gGantt = {
             this.option.useTimeline &&
                 (timelineFunc() || setInterval(timelineFunc, 1000));
             this.option.useDivider && dividerFunc();
-        };
-
-        createBar = (obj, customStart, customEnd) => {
-            const { title: name, id } = obj;
-            const start = customStart || +new Date(obj.start);
-            const end = customEnd || +new Date(obj.end);
-
-            if (start > end) {
-                throw new TypeError(
-                    name + ": 시작 시간은 종료시간 보다 빠를 수 없습니다."
-                );
-            }
-
-            const alreadyStarted = start < gGantt.lastMidnight;
-            const beContinue = end > gGantt.nextMidnight;
-            let dueOffset = 0;
-            alreadyStarted && (dueOffset = gGantt.lastMidnight - start);
-            const barDuring =
-                ((end - start - dueOffset) / gGantt.dayTime) * 100;
-            const barStart =
-                ((start - gGantt.lastMidnight) / gGantt.dayTime) * 100;
-
-            const bar = this.template.bar.cloneNode();
-            bar.id = `ggantt-${this.id}${id}`;
-
-            !alreadyStarted && (bar.style.left = barStart + "%");
-            alreadyStarted && !beContinue && bar.classList.add("ggantt-pre");
-            !alreadyStarted && beContinue && bar.classList.add("ggantt-suf");
-            bar.style.width = beContinue
-                ? 100 - barStart + "%"
-                : barDuring + "%";
-            const barSpan = gGantt.createEl("span", "text");
-            barSpan.innerHTML = name;
-            bar.append(barSpan);
-            const toStr = (date) => new Date(date).toLocaleString();
-            const str = `${name}: ${toStr(start)} ~ ${toStr(end)}`;
-            this.option.showRange && bar.append(` ${str}`);
-
-            const labelBind = this.option.labelTemplate
-                ? this.htmlReplacer(this.option.labelTemplate, obj, start, end)
-                : name;
-
-            const label = gGantt.createEl("div", "label");
-            const labelSpan = gGantt.createEl("span", "text");
-            labelSpan.innerHTML = labelBind;
-            label.append(labelSpan);
-            label.setAttribute("for", `#ggantt-${this.id}${id}`);
-
-            if (this.option.useTooltip) {
-                const tooltipWrap = gGantt.createEl("div", "tooltip");
-                const tooltip = gGantt.createEl("div", "dummy");
-                tooltipWrap.append(tooltip);
-                this.layout.workspace.append(tooltipWrap);
-
-                const tooltipBind = this.option.tooltipTemplate
-                    ? this.htmlReplacer(
-                          this.option.tooltipTemplate,
-                          name,
-                          start,
-                          end
-                      )
-                    : str;
-
-                const instance = new window.bootstrap.Tooltip(tooltip, {
-                    offset: "[10, 20]",
-                    trigger: "manual",
-                    placement: this.option.tooltipPlacement,
-                    container: this.layout.workspace,
-                    html: true,
-                    title: tooltipBind,
-                });
-                bar.addEventListener("mouseenter", () => {
-                    instance.show();
-                });
-                bar.addEventListener(
-                    "mousemove",
-                    ({ clientX: x, clientY: y }) => {
-                        tooltipWrap.style.left = x + "px";
-                        tooltipWrap.style.top = y + "px";
-                        instance.update();
-                    }
-                );
-
-                bar.addEventListener("mouseleave", () => {
-                    instance.hide();
-                });
-                this.created.push({ bar, start, end });
-            }
-
-            return { bar, label };
         };
     },
 };
