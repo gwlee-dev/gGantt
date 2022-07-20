@@ -56,44 +56,53 @@ export const gGantt = {
         label.append(labelSpan);
         label.setAttribute("for", `#ggantt-${that.id}${id}`);
 
-        if (that.option.useTooltip && typeof window.bootstrap !== "undefined") {
-            const tooltipWrap = gGantt.createEl("div", "tooltip");
-            const tooltip = gGantt.createEl("div", "dummy");
-            tooltipWrap.append(tooltip);
-            that.layout.workspace.append(tooltipWrap);
+        if (that.option.useTooltip) {
+            if (typeof window.bootstrap !== "undefined") {
+                const tooltipWrap = gGantt.createEl("div", "tooltip");
+                const tooltip = gGantt.createEl("div", "dummy");
+                tooltipWrap.append(tooltip);
+                that.layout.workspace.append(tooltipWrap);
 
-            const tooltipBind = that.option.tooltipTemplate
-                ? gGantt.htmlReplacer(
-                      that.option.customKeywords,
-                      that.option.tooltipTemplate,
-                      obj,
-                      start,
-                      end
-                  )
-                : str;
+                const tooltipBind = that.option.tooltipTemplate
+                    ? gGantt.htmlReplacer(
+                          that.option.customKeywords,
+                          that.option.tooltipTemplate,
+                          obj,
+                          start,
+                          end
+                      )
+                    : str;
 
-            const instance = new window.bootstrap.Tooltip(tooltip, {
-                offset: "[10, 20]",
-                trigger: "manual",
-                placement: that.option.tooltipPlacement,
-                container: that.layout.workspace,
-                html: true,
-                title: tooltipBind,
-            });
-            bar.addEventListener("mouseenter", () => {
-                instance.show();
-            });
-            bar.addEventListener("mousemove", ({ clientX: x, clientY: y }) => {
-                tooltipWrap.style.left = x + "px";
-                tooltipWrap.style.top = y + "px";
-                instance.update();
-            });
+                const instance = new window.bootstrap.Tooltip(tooltip, {
+                    offset: "[10, 20]",
+                    trigger: "manual",
+                    placement: that.option.tooltipPlacement,
+                    container: that.layout.workspace,
+                    html: true,
+                    title: tooltipBind,
+                });
+                bar.addEventListener("mouseenter", () => {
+                    instance.show();
+                });
+                bar.addEventListener(
+                    "mousemove",
+                    ({ clientX: x, clientY: y }) => {
+                        tooltipWrap.style.left = x + "px";
+                        tooltipWrap.style.top = y + "px";
+                        instance.update();
+                    }
+                );
 
-            bar.addEventListener("mouseleave", () => {
-                instance.hide();
-            });
-            that.created.push({ bar, start, end });
+                bar.addEventListener("mouseleave", () => {
+                    instance.hide();
+                });
+            } else {
+                throw new TypeError(
+                    "부트스트랩이 로드되지 않았습니다. 부트스트랩을 import 하거나 해당 옵션을 비활성화 하세요."
+                );
+            }
         }
+        that.created.push({ bar, start, end });
 
         return { bar, label };
     },
@@ -231,7 +240,6 @@ export const gGantt = {
                 this.layout.divider.wrap.append(this.layout.divider.divider);
 
                 document.body.append(this.layout.workspace);
-                this.layout.timeline.wrap.append(this.layout.timeline.timeline);
                 this.layout.bars.append(
                     this.layout.timeline.wrap,
                     this.layout.cursor
@@ -333,72 +341,80 @@ export const gGantt = {
             };
 
             if (this.option.displayMode === "group") {
-                data.forEach((group) => {
-                    const earliest = Math.min(
-                        ...group.schedule.map((item) => +new Date(item.start))
-                    );
-                    const latest = Math.max(
-                        ...group.schedule.map((item) => +new Date(item.end))
-                    );
-                    const groupBar = gGantt.createBar(
-                        this,
-                        group,
-                        earliest,
-                        latest
-                    );
-                    groupBar.barWrap = this.template.barWrap.cloneNode();
-                    groupBar.barWrap.id = `ggantt-group-${this.id}${group.id}`;
-                    groupBar.barWrap.append(groupBar.bar);
-
-                    [groupBar.label, groupBar.barWrap].forEach((x) => {
-                        x.setAttribute("data-bs-toggle", "collapse");
-                        x.setAttribute(
-                            "data-bs-target",
-                            `.ggantt-item-${this.id}${group.id}`
+                if (typeof window.bootstrap !== "undefined") {
+                    data.forEach((group) => {
+                        const earliest = Math.min(
+                            ...group.schedule.map(
+                                (item) => +new Date(item.start)
+                            )
                         );
-                        x.setAttribute("role", "button");
+                        const latest = Math.max(
+                            ...group.schedule.map((item) => +new Date(item.end))
+                        );
+                        const groupBar = gGantt.createBar(
+                            this,
+                            group,
+                            earliest,
+                            latest
+                        );
+                        groupBar.barWrap = this.template.barWrap.cloneNode();
+                        groupBar.barWrap.id = `ggantt-group-${this.id}${group.id}`;
+                        groupBar.barWrap.append(groupBar.bar);
+
+                        [groupBar.label, groupBar.barWrap].forEach((x) => {
+                            x.setAttribute("data-bs-toggle", "collapse");
+                            x.setAttribute(
+                                "data-bs-target",
+                                `.ggantt-item-${this.id}${group.id}`
+                            );
+                            x.setAttribute("role", "button");
+                        });
+
+                        this.layout.bars.append(groupBar.barWrap);
+                        this.layout.labels.append(groupBar.label);
+
+                        hoverSet(groupBar.barWrap, groupBar.label);
+
+                        const barCollapse = gGantt.createEl(
+                            "div",
+                            `item-${this.id}${group.id}`,
+                            "collapse"
+                        );
+                        const barCollapseInner = gGantt.createEl(
+                            "div",
+                            "collapse-inner"
+                        );
+                        const labelCollapse = gGantt.createEl(
+                            "div",
+                            `item-${this.id}${group.id}`,
+                            "collapse"
+                        );
+                        const labelCollapseInner = gGantt.createEl(
+                            "div",
+                            "collapse-inner"
+                        );
+                        const objs = getChild(group.schedule);
+                        Object.keys(objs).forEach((x) =>
+                            hoverSet(objs[x].label, objs[x].barWrap)
+                        );
+
+                        const bars = objs.map((x) => x.barWrap);
+                        const labels = objs.map((x) => x.label);
+
+                        barCollapseInner.append(...bars);
+                        labelCollapseInner.append(...labels);
+
+                        barCollapse.append(barCollapseInner);
+                        labelCollapse.append(labelCollapseInner);
+
+                        this.layout.bars.append(barCollapse);
+                        this.layout.labels.append(labelCollapse);
                     });
-
-                    this.layout.bars.append(groupBar.barWrap);
-                    this.layout.labels.append(groupBar.label);
-
-                    hoverSet(groupBar.barWrap, groupBar.label);
-
-                    const barCollapse = gGantt.createEl(
-                        "div",
-                        `item-${this.id}${group.id}`,
-                        "collapse"
+                } else {
+                    throw new TypeError(
+                        "부트스트랩이 로드되지 않았습니다. 부트스트랩을 import 하거나 해당 옵션을 비활성화 하세요."
                     );
-                    const barCollapseInner = gGantt.createEl(
-                        "div",
-                        "collapse-inner"
-                    );
-                    const labelCollapse = gGantt.createEl(
-                        "div",
-                        `item-${this.id}${group.id}`,
-                        "collapse"
-                    );
-                    const labelCollapseInner = gGantt.createEl(
-                        "div",
-                        "collapse-inner"
-                    );
-                    const objs = getChild(group.schedule);
-                    Object.keys(objs).forEach((x) =>
-                        hoverSet(objs[x].label, objs[x].barWrap)
-                    );
-
-                    const bars = objs.map((x) => x.barWrap);
-                    const labels = objs.map((x) => x.label);
-
-                    barCollapseInner.append(...bars);
-                    labelCollapseInner.append(...labels);
-
-                    barCollapse.append(barCollapseInner);
-                    labelCollapse.append(labelCollapseInner);
-
-                    this.layout.bars.append(barCollapse);
-                    this.layout.labels.append(labelCollapse);
-                });
+                }
             }
 
             if (this.option.displayMode === "separated") {
@@ -462,26 +478,30 @@ export const gGantt = {
             }, 0);
 
             const timelineFunc = () => {
+                this.layout.timeline.wrap.append(this.layout.timeline.timeline);
                 const now = +new Date();
                 const currentTime = now - gGantt.lastMidnight;
                 const timelinePos = (currentTime / gGantt.dayTime) * 100;
                 this.layout.timeline.timeline.style.left = timelinePos + "%";
+            };
 
-                const bindClass = (arr, stat) => {
-                    return arr.map((obj) => {
-                        if (
-                            ![...obj.bar.classList].includes(
-                                "ggantt-status-" + stat
-                            )
+            const bindClass = (arr, stat) => {
+                return arr.map((obj) => {
+                    if (
+                        ![...obj.bar.classList].includes(
+                            "ggantt-status-" + stat
                         )
-                            Array.from(obj.bar.classList)
-                                .filter((x) => x.startsWith("ggantt-status-"))
-                                .map((x) => obj.bar.classList.remove(x));
-                        obj.bar.classList.add("ggantt-status-" + stat);
-                        return obj;
-                    });
-                };
+                    )
+                        Array.from(obj.bar.classList)
+                            .filter((x) => x.startsWith("ggantt-status-"))
+                            .map((x) => obj.bar.classList.remove(x));
+                    obj.bar.classList.add("ggantt-status-" + stat);
+                    return obj;
+                });
+            };
 
+            const bind = () => {
+                const now = +new Date();
                 this.running = bindClass(
                     this.created.filter(
                         (obj) => obj.start < now && obj.end > now
@@ -499,6 +519,8 @@ export const gGantt = {
                     "queued"
                 );
             };
+
+            bind();
 
             this.option.useTimeline &&
                 (timelineFunc() || setInterval(timelineFunc, 1000));
