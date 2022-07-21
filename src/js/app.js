@@ -56,50 +56,41 @@ export const gGantt = {
         label.append(labelSpan);
 
         if (that.option.useTooltip) {
-            if (typeof window.bootstrap !== "undefined") {
-                const tooltipWrap = gGantt.createEl("div", "tooltip");
-                const tooltip = gGantt.createEl("div", "dummy");
-                tooltipWrap.append(tooltip);
-                that.layout.workspace.append(tooltipWrap);
+            const tooltipWrap = gGantt.createEl("div", "tooltip");
+            const tooltip = gGantt.createEl("div", "dummy");
+            tooltipWrap.append(tooltip);
+            that.layout.workspace.append(tooltipWrap);
 
-                const tooltipBind = that.option.tooltipTemplate
-                    ? gGantt.htmlReplacer(
-                          that.option.customKeywords,
-                          that.option.tooltipTemplate,
-                          obj,
-                          start,
-                          end
-                      )
-                    : str;
+            const tooltipBind = that.option.tooltipTemplate
+                ? gGantt.htmlReplacer(
+                      that.option.customKeywords,
+                      that.option.tooltipTemplate,
+                      obj,
+                      start,
+                      end
+                  )
+                : str;
 
-                const instance = new window.bootstrap.Tooltip(tooltip, {
-                    offset: "[10, 20]",
-                    trigger: "manual",
-                    placement: that.option.tooltipPlacement,
-                    container: that.layout.workspace,
-                    html: true,
-                    title: tooltipBind,
-                });
-                bar.addEventListener("mouseenter", () => {
-                    instance.show();
-                });
-                bar.addEventListener(
-                    "mousemove",
-                    ({ clientX: x, clientY: y }) => {
-                        tooltipWrap.style.left = window.scrollX + x + "px";
-                        tooltipWrap.style.top = window.scrollY + y + "px";
-                        instance.update();
-                    }
-                );
+            const instance = new window.bootstrap.Tooltip(tooltip, {
+                offset: "[10, 20]",
+                trigger: "manual",
+                placement: that.option.tooltipPlacement,
+                container: that.layout.workspace,
+                html: true,
+                title: tooltipBind,
+            });
+            bar.addEventListener("mouseenter", () => {
+                instance.show();
+            });
+            bar.addEventListener("mousemove", ({ clientX: x, clientY: y }) => {
+                tooltipWrap.style.left = window.scrollX + x + "px";
+                tooltipWrap.style.top = window.scrollY + y + "px";
+                instance.update();
+            });
 
-                bar.addEventListener("mouseleave", () => {
-                    instance.hide();
-                });
-            } else {
-                throw new TypeError(
-                    "부트스트랩이 로드되지 않았습니다. 부트스트랩을 import 하거나 해당 옵션을 비활성화 하세요."
-                );
-            }
+            bar.addEventListener("mouseleave", () => {
+                instance.hide();
+            });
         }
         that.created.push({ bar, start, end });
 
@@ -136,23 +127,30 @@ export const gGantt = {
         });
         return newData;
     },
+    checkOptions: (option) => {
+        const needs = option.useTooltip || option.displayMode === "group";
+        const imported =
+            typeof window.bootstrap !== "undefined" ||
+            typeof bootstrap !== "undefined";
+        if (needs && imported) {
+            return true;
+        } else {
+            throw new TypeError("bootstrap.js를 불러오지 못했습니다.");
+        }
+    },
     Chart: class {
         option = {
             autoInitialize: true,
             displayMode: "group",
-            showRange: false,
             useTooltip: true,
             tooltipPlacement: "bottom",
             useTimeline: true,
             useDivider: true,
-            tooltipTemplate: false,
-            labelTemplate: false,
             fieldTitle: "데이터명",
             sortChild: true,
             useCursor: true,
             timeDivision: 24,
             useRowBorder: true,
-            customKeywords: false,
         };
 
         constructor(root, data, userOption) {
@@ -160,11 +158,10 @@ export const gGantt = {
             this.data = data;
             this.id = Math.random().toString().substring(2, 8);
 
-            userOption &&
-                Object.keys(this.option).forEach((x) => {
-                    x in userOption && (this.option[x] = userOption[x]);
-                });
-            this.option.autoInitialize && this.init(userOption);
+            Object.assign(this.option, userOption);
+            gGantt.checkOptions(this.option) &&
+                this.option.autoInitialize &&
+                this.init(userOption);
         }
 
         template = {
@@ -329,7 +326,7 @@ export const gGantt = {
                 });
             };
 
-            const hoverSet = (...els) => {
+            const hoverGroup = (...els) => {
                 const elements = [...els];
                 elements.forEach((x) => {
                     x.addEventListener("mouseenter", () =>
@@ -341,85 +338,74 @@ export const gGantt = {
                 });
             };
 
-            if (this.option.displayMode === "group") {
-                if (typeof window.bootstrap !== "undefined") {
-                    data.forEach((group) => {
-                        const earliest = Math.min(
-                            ...group.schedule.map(
-                                (item) => +new Date(item.start)
-                            )
-                        );
-                        const latest = Math.max(
-                            ...group.schedule.map((item) => +new Date(item.end))
-                        );
-                        const groupBar = gGantt.createBar(
-                            this,
-                            group,
-                            earliest,
-                            latest
-                        );
-                        groupBar.barWrap = this.template.barWrap.cloneNode();
-                        groupBar.barWrap.id = `ggantt-group-${this.id}${group.id}`;
-                        groupBar.barWrap.append(groupBar.bar);
-
-                        [groupBar.label, groupBar.barWrap].forEach((x) => {
-                            x.setAttribute("data-bs-toggle", "collapse");
-                            x.setAttribute(
-                                "data-bs-target",
-                                `.ggantt-item-${this.id}${group.id}`
-                            );
-                            x.setAttribute("role", "button");
-                        });
-
-                        this.layout.bars.append(groupBar.barWrap);
-                        this.layout.labels.append(groupBar.label);
-
-                        hoverSet(groupBar.barWrap, groupBar.label);
-
-                        const barCollapse = gGantt.createEl(
-                            "div",
-                            `item-${this.id}${group.id}`,
-                            "collapse"
-                        );
-                        const barCollapseInner = gGantt.createEl(
-                            "div",
-                            "collapse-inner"
-                        );
-                        const labelCollapse = gGantt.createEl(
-                            "div",
-                            `item-${this.id}${group.id}`,
-                            "collapse"
-                        );
-                        const labelCollapseInner = gGantt.createEl(
-                            "div",
-                            "collapse-inner"
-                        );
-                        const objs = getChild(group.schedule);
-                        Object.keys(objs).forEach((x) =>
-                            hoverSet(objs[x].label, objs[x].barWrap)
-                        );
-
-                        const bars = objs.map((x) => x.barWrap);
-                        const labels = objs.map((x) => x.label);
-
-                        barCollapseInner.append(...bars);
-                        labelCollapseInner.append(...labels);
-
-                        barCollapse.append(barCollapseInner);
-                        labelCollapse.append(labelCollapseInner);
-
-                        this.layout.bars.append(barCollapse);
-                        this.layout.labels.append(labelCollapse);
-                    });
-                } else {
-                    throw new TypeError(
-                        "부트스트랩이 로드되지 않았습니다. 부트스트랩을 import 하거나 해당 옵션을 비활성화 하세요."
+            const display = {
+                group: (group) => {
+                    const earliest = Math.min(
+                        ...group.schedule.map((item) => +new Date(item.start))
                     );
-                }
-            }
+                    const latest = Math.max(
+                        ...group.schedule.map((item) => +new Date(item.end))
+                    );
+                    const groupBar = gGantt.createBar(
+                        this,
+                        group,
+                        earliest,
+                        latest
+                    );
+                    groupBar.barWrap = this.template.barWrap.cloneNode();
+                    groupBar.barWrap.id = `ggantt-group-${this.id}${group.id}`;
+                    groupBar.barWrap.append(groupBar.bar);
 
-            if (this.option.displayMode === "compare") {
-                data.forEach((group) => {
+                    [groupBar.label, groupBar.barWrap].forEach((x) => {
+                        x.setAttribute("data-bs-toggle", "collapse");
+                        x.setAttribute(
+                            "data-bs-target",
+                            `.ggantt-item-${this.id}${group.id}`
+                        );
+                        x.setAttribute("role", "button");
+                    });
+
+                    this.layout.bars.append(groupBar.barWrap);
+                    this.layout.labels.append(groupBar.label);
+
+                    hoverGroup(groupBar.barWrap, groupBar.label);
+
+                    const barCollapse = gGantt.createEl(
+                        "div",
+                        `item-${this.id}${group.id}`,
+                        "collapse"
+                    );
+                    const barCollapseInner = gGantt.createEl(
+                        "div",
+                        "collapse-inner"
+                    );
+                    const labelCollapse = gGantt.createEl(
+                        "div",
+                        `item-${this.id}${group.id}`,
+                        "collapse"
+                    );
+                    const labelCollapseInner = gGantt.createEl(
+                        "div",
+                        "collapse-inner"
+                    );
+                    const objs = getChild(group.schedule);
+                    Object.keys(objs).forEach((x) =>
+                        hoverGroup(objs[x].label, objs[x].barWrap)
+                    );
+
+                    const bars = objs.map((x) => x.barWrap);
+                    const labels = objs.map((x) => x.label);
+
+                    barCollapseInner.append(...bars);
+                    labelCollapseInner.append(...labels);
+
+                    barCollapse.append(barCollapseInner);
+                    labelCollapse.append(labelCollapseInner);
+
+                    this.layout.bars.append(barCollapse);
+                    this.layout.labels.append(labelCollapse);
+                },
+                compare: (group) => {
                     this.root.classList.add("ggantt-compare");
                     const earliest = Math.min(
                         ...group.schedule.map((item) => +new Date(item.start))
@@ -444,7 +430,7 @@ export const gGantt = {
 
                     const objs = getChild(group.schedule).slice(0, 2);
                     Object.keys(objs).forEach((x) =>
-                        hoverSet(label, objs[x].barWrap)
+                        hoverGroup(label, objs[x].barWrap)
                     );
 
                     const bars = objs.map((x) => x.barWrap);
@@ -452,14 +438,11 @@ export const gGantt = {
 
                     this.layout.bars.append(...bars);
                     this.layout.labels.append(label);
-                });
-            }
-
-            if (this.option.displayMode === "separated") {
-                data.forEach((group) => {
+                },
+                separated: (group) => {
                     const objs = getChild(group.schedule);
                     Object.keys(objs).forEach((x) =>
-                        hoverSet(objs[x].label, objs[x].barWrap)
+                        hoverGroup(objs[x].label, objs[x].barWrap)
                     );
 
                     const bars = objs.map((x) => x.barWrap);
@@ -467,11 +450,8 @@ export const gGantt = {
 
                     this.layout.bars.append(...bars);
                     this.layout.labels.append(...labels);
-                });
-            }
-
-            if (this.option.displayMode === "queue") {
-                data.forEach((group) => {
+                },
+                queue: (group) => {
                     const earliest = Math.min(
                         ...group.schedule.map((item) => +new Date(item.start))
                     );
@@ -504,9 +484,11 @@ export const gGantt = {
                     this.layout.bars.append(barWrap);
                     this.layout.labels.append(label);
 
-                    hoverSet(label, barWrap);
-                });
-            }
+                    hoverGroup(label, barWrap);
+                },
+            };
+
+            data.forEach((group) => display[this.option.displayMode](group));
 
             setTimeout(() => {
                 document
@@ -557,7 +539,6 @@ export const gGantt = {
                     "queued"
                 );
             };
-
             bind();
 
             if (this.option.useTimeline) {
