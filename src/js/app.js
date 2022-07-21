@@ -275,6 +275,7 @@ export const gGantt = {
                 const voidStatus = gGantt.createEl("div", "void");
                 voidStatus.innerHTML = "표시할 내용이 없습니다.";
                 this.root.append(voidStatus);
+                this.root.classList.add("ggantt-no-contents");
             }
 
             const dividerFunc = () => {
@@ -517,8 +518,9 @@ export const gGantt = {
                 this.layout.timeline.wrap.append(this.layout.timeline.timeline);
                 const now = +new Date();
                 const currentTime = now - gGantt.lastMidnight;
-                const timelinePos = (currentTime / gGantt.dayTime) * 100;
-                this.layout.timeline.timeline.style.left = timelinePos + "%";
+                this.timelinePos = currentTime / gGantt.dayTime;
+                this.layout.timeline.timeline.style.left =
+                    this.timelinePos * 100 + "%";
             };
 
             const bindClass = (arr, stat) => {
@@ -558,8 +560,15 @@ export const gGantt = {
 
             bind();
 
-            this.option.useTimeline &&
-                (timelineFunc() || setInterval(timelineFunc, 1000));
+            if (this.option.useTimeline) {
+                timelineFunc();
+                this.timelineInterval = setInterval(timelineFunc, 1000);
+
+                const { scrollWidth: outer, clientWidth: inner } =
+                    this.layout.bars;
+                this.layout.bars.scrollLeft =
+                    (outer - inner) * this.timelinePos;
+            }
             this.option.useDivider && dividerFunc();
         };
     },

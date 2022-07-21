@@ -1,9 +1,9 @@
 .ggantt {
     position: relative;
-    &::before {
+    &:not(.ggantt-no-contents)::before {
         content: "";
         width: 100%;
-        background-color: $header-bg;
+        background: $header-bg;
         position: absolute;
         z-index: -1;
     }
@@ -44,7 +44,7 @@
     }
 
     &.hover::after {
-        background-color: $hover-bg;
+        background: $hover-bg;
     }
 }
 

@@ -49,21 +49,20 @@ html(lang="ko")
         script.
             const queue = new gGantt.Chart(document.querySelector("#ggantt-queue"), sampleData, {
                 displayMode: "queue",
-                timeDivision: 4,
-                customKeywords: (source, keywords) => {
-                    keywords.status = source.status || source.title;
-                },
-                labelTemplate: "@ggantt:status@",
             });
             const group = new gGantt.Chart(document.querySelector("#ggantt-group"), sampleData, {
                 labelTemplate: "@ggantt:title@",
             });
             const double = new gGantt.Chart(document.querySelector("#ggantt-compare"), sampleData, {
                 displayMode: "compare",
+                timeDivision: 4,
+                labelTemplate: "@ggantt:title@ @ggantt:status@",
+                customKeywords: (source, keywords) => {
+                    keywords.status = source.status ? `(${source.status})` : "";
+                },
             });
             const separated = new gGantt.Chart(document.querySelector("#ggantt-separated"), sampleData, {
                 displayMode: "separated",
-                labelTemplate: "@ggantt:title@",
             });
 
             window.sample = { queue, group, separated };

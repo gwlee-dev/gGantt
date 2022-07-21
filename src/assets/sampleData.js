@@ -12,7 +12,7 @@ const sampleData = [
         title: "일정그룹 A~B",
         id: "0",
         test: "테스트중",
-        status: "실행예정",
+        status: "상태값A",
         schedule: [
             {
                 title: "일정 A",
@@ -102,17 +102,18 @@ const sampleData = [
     {
         title: "일정그룹 K~L",
         id: "4",
+        status: "상태값B",
         schedule: [
             {
                 title: "일정 K",
                 id: "4A",
-                start: `${today} 22:30`,
+                start: `${today} 23:30`,
                 end: `${today} 23:40`,
             },
             {
                 title: "일정 L",
                 id: "4B",
-                start: `${today} 22:30`,
+                start: `${today} 23:30`,
                 end: `${today} 24:00`,
             },
         ],
