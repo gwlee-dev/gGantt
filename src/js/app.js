@@ -273,9 +273,7 @@ gGantt.display = {
         );
         const groupBar = gGantt.createBar(that, group, earliest, latest);
         groupBar.barWrap = gGantt.template.barWrap.cloneNode();
-        // groupBar.barWrap.id = `ggantt-group-${that.id}${group.id}`;
         groupBar.barWrap.append(groupBar.bar);
-
         [groupBar.label, groupBar.barWrap].forEach((x) => {
             x.setAttribute("data-bs-toggle", "collapse");
             x.setAttribute(
@@ -315,10 +313,8 @@ gGantt.display = {
 
         barCollapse.append(barCollapseInner);
         labelCollapse.append(labelCollapseInner);
-
         that.layout.bars.append(barCollapse);
         that.layout.labels.append(labelCollapse);
-
         that.elements.push({
             id: group.id,
             dom: {
@@ -438,7 +434,6 @@ gGantt.display = {
         });
     },
 };
-
 gGantt.Chart = class {
     option = { ...gGantt.option };
 
@@ -611,22 +606,24 @@ gGantt.Chart = class {
             .filter(({ id }) => existDataIds.includes(id))
             .forEach((group) => {
                 group.schedule.forEach((x) => {
-                    const temp = {};
-                    const target = this.created.find(({ id, start, end }) => {
-                        const isExists = id === x.id;
-                        if (!isExists) return false;
-                        temp.start = +new Date(x.start);
-                        temp.end = +new Date(x.end);
-                        const isChanged =
-                            start !== temp.start || end !== temp.end;
-                        return isChanged;
-                    });
+                    const target = this.created.find(({ id }) => id === x.id);
                     if (target) {
-                        gGantt.settingBar(temp.start, temp.end, target.bar);
+                        const start = +new Date(target.start);
+                        const end = +new Date(target.end);
+                        const isChanged =
+                            target.start !== start || target.end !== end;
+                        isChanged && gGantt.settingBar(start, end, target.bar);
                     } else {
                         const obj = gGantt.createBar(this, x);
-                        obj.barWrap = gGantt.template.barWrap.cloneNode();
-                        obj.barWrap.append(obj.bar);
+                        if (this.option.displayMode === "group") {
+                            obj.barWrap = gGantt.template.barWrap.cloneNode();
+                            obj.barWrap.append(obj.bar);
+                            const groupTarget = this.elements.find(
+                                ({ id }) => id === group.id
+                            ).dom;
+                            groupTarget.barCollapse.append(obj.barWrap);
+                            groupTarget.labelCollapse.append(obj.label);
+                        }
                     }
                 });
             });

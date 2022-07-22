@@ -144,6 +144,12 @@ const sampleData2 = [
                 start: `${today} 12:00:00`,
                 end: `${today} 22:00:00`,
             },
+            {
+                title: "일정 비비빅",
+                id: "0BB",
+                start: `${today} 22:00:00`,
+                end: `${today} 24:00:00`,
+            },
         ],
     },
     {
