@@ -120,7 +120,153 @@ const sampleData = [
     },
 ];
 
+const sampleData2 = [
+    {
+        title: "빈 그룹",
+        id: "9999",
+        test: "테스트중",
+        status: "상태값A",
+        schedule: [],
+    },
+    {
+        title: "일정그룹 A~B",
+        id: "0",
+        test: "테스트중",
+        status: "상태값A",
+        schedule: [
+            {
+                title: "일정 A",
+                id: "0B",
+                start: `${today} 02:00:00`,
+                end: `${today} 06:00:00`,
+                data: {
+                    one: "한놈",
+                    two: "두식이",
+                    three: "석삼",
+                },
+            },
+            {
+                title: "일정 B",
+                id: "0A",
+                start: `${today} 11:00:00`,
+                end: `${today} 14:00:00`,
+            },
+        ],
+    },
+    {
+        title: "일정그룹 C~E",
+        id: "1",
+        schedule: [
+            {
+                title: "일정 C",
+                id: "1A",
+                start: `${yesterday} 23:00:00`,
+                end: `${today} 05:00:00`,
+            },
+            {
+                title: "일정 D",
+                id: "1Aaa",
+                start: `${today} 05:00:30`,
+                end: `${today} 09:00:00`,
+            },
+            {
+                title: "일정 E",
+                id: "1B",
+                start: `${today} 11:00:00`,
+                end: `${today} 16:00:00`,
+            },
+        ],
+    },
+    // {
+    //     title: "일정그룹 F~H",
+    //     id: "2",
+    //     schedule: [
+    //         {
+    //             title: "일정 F",
+    //             id: "2asdfA",
+    //             start: `${today} 03:00`,
+    //             end: `${today} 9:00`,
+    //         },
+    //         {
+    //             title: "일정 G",
+    //             id: "2B",
+    //             start: `${today} 11:30`,
+    //             end: `${today} 20:00`,
+    //         },
+    //         {
+    //             title: "일정 H",
+    //             id: "2asdA",
+    //             start: `${yesterday} 21:00`,
+    //             end: `${today} 01:00`,
+    //         },
+    //     ],
+    // },
+    {
+        title: "일정그룹 I~J",
+        id: "3",
+        schedule: [
+            {
+                title: "일정 I",
+                id: "3A",
+                start: `${today} 08:30`,
+                end: `${today} 15:00`,
+            },
+            {
+                title: "일정 J",
+                id: "3B",
+                start: `${today} 14:30`,
+                end: `${tomorrow} 21:00`,
+            },
+        ],
+    },
+    {
+        title: "일정그룹 K~L",
+        id: "4",
+        status: "상태값B",
+        schedule: [
+            {
+                title: "일정 K",
+                id: "4A",
+                start: `${today} 13:30`,
+                end: `${today} 23:40`,
+            },
+            {
+                title: "일정 L",
+                id: "4B",
+                start: `${today} 23:30`,
+                end: `${today} 24:00`,
+            },
+            {
+                title: "일정 aaaa",
+                id: "4Bcc",
+                start: `${today} 23:30`,
+                end: `${today} 24:00`,
+            },
+        ],
+    },
+    {
+        title: "일정그룹 nnnnn",
+        id: "nnnnn",
+        status: "상태값B",
+        schedule: [
+            {
+                title: "일정 K",
+                id: "n4A",
+                start: `${today} 13:30`,
+                end: `${today} 23:40`,
+            },
+            {
+                title: "일정 L",
+                id: "n4B",
+                start: `${today} 23:30`,
+                end: `${today} 24:00`,
+            },
+        ],
+    },
+];
+
 window.sampleData = sampleData;
+window.sampleData2 = sampleData2;
 
 const templateSample = `
     <div class="text-start">
