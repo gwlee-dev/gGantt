@@ -577,7 +577,7 @@ gGantt.Chart = class {
         this.option.useDivider && gGantt.createDivider(this);
     };
 
-    removeGroup = ({ id }) => {
+    removeGroup = (id) => {
         const target = this.elements.find((el) => el.id === id);
         Object.keys(target.dom).forEach((x) => {
             const element = target.dom[x];
@@ -592,7 +592,7 @@ gGantt.Chart = class {
         this.elements = this.elements.filter((x) => x.id !== id);
     };
 
-    update = (inputData) => {
+    updateAll = (inputData) => {
         const newData = inputData.filter((x) => x.schedule.length);
         const existDataIds = this.data.map(({ id }) => id);
         const newDataIds = newData.map(({ id }) => id);
@@ -605,7 +605,31 @@ gGantt.Chart = class {
 
         this.data
             .filter(({ id }) => !newDataIds.includes(id))
-            .forEach((group) => this.removeGroup(group));
+            .forEach((group) => this.removeGroup(group.id));
+
+        newData
+            .filter(({ id }) => existDataIds.includes(id))
+            .forEach((group) => {
+                group.schedule.forEach((x) => {
+                    const temp = {};
+                    const target = this.created.find(({ id, start, end }) => {
+                        const isExists = id === x.id;
+                        if (!isExists) return false;
+                        temp.start = +new Date(x.start);
+                        temp.end = +new Date(x.end);
+                        const isChanged =
+                            start !== temp.start || end !== temp.end;
+                        return isChanged;
+                    });
+                    if (target) {
+                        gGantt.settingBar(temp.start, temp.end, target.bar);
+                    } else {
+                        const obj = gGantt.createBar(this, x);
+                        obj.barWrap = gGantt.template.barWrap.cloneNode();
+                        obj.barWrap.append(obj.bar);
+                    }
+                });
+            });
 
         gGantt.startTransition();
         gGantt.bindStatusClass(this.created);
