@@ -127,27 +127,27 @@ const sampleData2 = [
         test: "테스트중",
         status: "상태값A",
         schedule: [
-            {
-                title: "일정 A",
-                id: "0B",
-                start: `${today} 03:00:00`,
-                end: `${today} 05:00:00`,
-                data: {
-                    one: "한놈",
-                    two: "두식이",
-                    three: "석삼",
-                },
-            },
+            // {
+            //     title: "일정 A",
+            //     id: "0B",
+            //     start: `${today} 02:00:00`,
+            //     end: `${today} 05:00:00`,
+            //     data: {
+            //         one: "한놈",
+            //         two: "두식이",
+            //         three: "석삼",
+            //     },
+            // },
             {
                 title: "일정 B",
                 id: "0A",
-                start: `${today} 12:00:00`,
-                end: `${today} 22:00:00`,
+                start: `${today} 13:00:00`,
+                end: `${today} 20:00:00`,
             },
             {
                 title: "일정 비비빅",
                 id: "0BB",
-                start: `${today} 22:00:00`,
+                start: `${today} 20:00:00`,
                 end: `${today} 24:00:00`,
             },
         ],
@@ -160,6 +160,18 @@ const sampleData2 = [
                 title: "일정 C",
                 id: "1A",
                 start: `${today} 00:00:00`,
+                end: `${today} 02:00:00`,
+            },
+            {
+                title: "일정 Caa",
+                id: "1bbbbA",
+                start: `${today} 02:00:00`,
+                end: `${today} 03:00:00`,
+            },
+            {
+                title: "일정 aCaa",
+                id: "1bbbbAd",
+                start: `${today} 03:00:00`,
                 end: `${today} 04:00:00`,
             },
             {
@@ -201,19 +213,19 @@ const sampleData2 = [
         ],
     },
     {
-        title: "일정그룹 I~J",
-        id: "3",
+        title: "새로운 일정 그룹",
+        id: "3aa",
         schedule: [
             {
                 title: "일정 I",
                 id: "3A",
-                start: `${today} 07:30`,
+                start: `${today} 06:30`,
                 end: `${today} 14:00`,
             },
             {
                 title: "일정 J",
                 id: "3B",
-                start: `${today} 15:30`,
+                start: `${today} 13:30`,
                 end: `${tomorrow} 20:00`,
             },
         ],
@@ -226,8 +238,8 @@ const sampleData2 = [
             {
                 title: "일정 K",
                 id: "4A",
-                start: `${today} 23:30`,
-                end: `${today} 23:40`,
+                start: `${today} 20:30`,
+                end: `${today} 23:30`,
             },
             {
                 title: "일정 L",
