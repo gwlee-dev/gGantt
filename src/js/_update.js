@@ -25,9 +25,8 @@ export const update = {
                     const obj = createBar(that, x, group);
                     const barWrap = createEl("div", "bar-wrap");
                     barWrap.append(obj.bar);
-                    const {
-                        dom: { barCollapse, labelCollapse },
-                    } = that.storage[group.id];
+                    const { barCollapse, labelCollapse } =
+                        that.storage[group.id];
                     barCollapse
                         .querySelector(".ggantt-collapse-inner")
                         .append(barWrap);
@@ -64,14 +63,13 @@ export const update = {
                     target.end = newEnd;
                 } else {
                     const obj = createBar(that, x, group);
-                    const {
-                        dom: { barWrap },
-                    } = that.storage[group.id];
+                    const { barWrap } = that.storage[group.id];
                     barWrap.append(obj.bar);
                 }
             });
         },
         remove: (that, group, data) => {
+            console.log(group.title);
             const newScheduleIds = data
                 .find(({ id }) => id === group.id)
                 .schedule.map((x) => x.id);
@@ -97,9 +95,7 @@ export const update = {
                     target.end = newEnd;
                 } else {
                     const obj = createBar(that, x, group);
-                    const {
-                        dom: { barWrap },
-                    } = that.storage[group.id];
+                    const { barWrap } = that.storage[group.id];
                     barWrap.append(obj.bar);
                 }
             });

@@ -77,7 +77,7 @@ export const Chart = class {
             return !!starts.length && !!ends.length;
         });
 
-        if (data.length) {
+        if (typeof data !== "undefined") {
             const fieldName = createEl("div", "field");
             const span = createEl("span", "text");
             span.innerHTML = this.option.fieldTitle;
@@ -141,49 +141,45 @@ export const Chart = class {
 
     removeGroup = (id) => {
         const target = this.storage[id];
-        Object.keys(target.dom).forEach((x) => {
-            const element = target.dom[x];
+        Object.keys(target).forEach((x) => {
+            const element = target[x];
+            console.log(element);
             const bars = element.querySelectorAll(".ggantt-bar");
             [...bars].forEach((bar) => {
                 bar.classList.add("removing");
             });
             setTimeout(() => element.remove(), 500);
         });
-        this.data = this.data.filter((x) => x.id !== id);
         delete this.storage[id];
     };
 
     updateAll = (inputData) => {
         const data = [...inputData];
-        const newData = data.filter((x) => x.schedule.length);
+        const oldData = [...this.data];
+        const newData = data.filter((x) => typeof x.schedule !== "undefined");
         const existDataIds = this.data.map(({ id }) => id);
         const newDataIds = newData.map(({ id }) => id);
+
         newData
             .filter(({ id }) => !existDataIds.includes(id))
-            .forEach((group) => {
-                display[this.option.displayMode](this, group);
-                this.data.push(group);
-            });
+            .forEach((group) => display[this.option.displayMode](this, group));
 
-        this.data
+        oldData
             .filter(({ id }) => !newDataIds.includes(id))
             .forEach((group) => this.removeGroup(group.id));
 
         newData
             .filter(({ id }) => existDataIds.includes(id))
-            .forEach((group) => {
-                update[this.option.displayMode].modify(this, group);
-            });
+            .forEach((group) =>
+                update[this.option.displayMode].modify(this, group)
+            );
 
-        this.data.forEach((group) => {
-            update[this.option.displayMode].remove(this, group, data);
+        oldData.forEach((group) => {
+            update[this.option.displayMode].remove(this, group, newData);
         });
 
-        this.data = data;
-
+        this.data = newData;
         startTransition();
         bindStatusClass(this.storage);
-
-        console.log(this.data);
     };
 };
