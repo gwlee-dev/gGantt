@@ -1,5 +1,6 @@
 import { htmlReplacer } from "./_bind";
-import { createBar, getChild, template } from "./_dom";
+import { template } from "./_default";
+import { createBar, getChild } from "./_dom";
 import { hoverGroup } from "./_event";
 import { createEl } from "./_tool";
 
@@ -11,7 +12,11 @@ export const display = {
         const latest = Math.max(
             ...group.schedule.map((item) => +new Date(item.end))
         );
-        const groupBar = createBar(that, group, earliest, latest);
+        const groupBar = createBar(that, {
+            start: earliest,
+            end: latest,
+            ...group,
+        });
         groupBar.barWrap = template.barWrap.cloneNode();
         groupBar.barWrap.append(groupBar.bar);
         [groupBar.label, groupBar.barWrap].forEach((x) => {
@@ -40,7 +45,7 @@ export const display = {
             "collapse"
         );
         const labelCollapseInner = createEl("div", "collapse-inner");
-        const objs = getChild(that, group.schedule);
+        const objs = getChild(that, group);
         Object.keys(objs).forEach((x) =>
             hoverGroup(objs[x].label, objs[x].barWrap)
         );
@@ -55,14 +60,11 @@ export const display = {
         labelCollapse.append(labelCollapseInner);
         that.layout.bars.append(barCollapse);
         that.layout.labels.append(labelCollapse);
-        that.elements.push({
-            id: group.id,
-            dom: {
-                barWrap: groupBar.barWrap,
-                label: groupBar.label,
-                barCollapse,
-                labelCollapse,
-            },
+        Object.assign(that.storage[group.id], {
+            barWrap: groupBar.barWrap,
+            label: groupBar.label,
+            barCollapse,
+            labelCollapse,
         });
     },
     compare: (that, group) => {
@@ -88,7 +90,7 @@ export const display = {
         labelSpan.innerHTML = labelBind;
         label.append(labelSpan);
 
-        const objs = getChild(that, group.schedule).slice(0, 2);
+        const objs = getChild(that, group).slice(0, 2);
         Object.keys(objs).forEach((x) => hoverGroup(label, objs[x].barWrap));
 
         const bars = objs.map((x) => x.barWrap);
@@ -96,18 +98,15 @@ export const display = {
         that.layout.bars.append(...bars);
         that.layout.labels.append(label);
 
-        const barExports = {
-            id: group.id,
-            dom: { label },
-        };
+        const barExports = { label };
 
         [...bars].forEach((bar, index) => {
-            barExports.dom[`bar${index}`] = bar;
+            barExports[`bar${index}`] = bar;
         });
-        that.elements.push(barExports);
+        that.storage[group.id] = barExports;
     },
     separated: (that, group) => {
-        const objs = getChild(that, group.schedule);
+        const objs = getChild(that, group);
         Object.keys(objs).forEach((x) =>
             hoverGroup(objs[x].label, objs[x].barWrap)
         );
@@ -118,18 +117,15 @@ export const display = {
         that.layout.bars.append(...bars);
         that.layout.labels.append(...labels);
 
-        const barExports = {
-            id: group.id,
-            dom: {},
-        };
+        const barExports = {};
 
         [...bars].forEach((bar, index) => {
-            barExports.dom[`bar${index}`] = bar;
+            barExports[`bar${index}`] = bar;
         });
         [...labels].forEach((bar, index) => {
-            barExports.dom[`label${index}`] = bar;
+            barExports[`label${index}`] = bar;
         });
-        that.elements.push(barExports);
+        that.storage[group.id] = barExports;
     },
     queue: (that, group) => {
         const earliest = Math.min(
@@ -153,12 +149,11 @@ export const display = {
         label.append(labelSpan);
 
         const objs = group.schedule.map((child) => {
-            const obj = createBar(that, child);
+            const obj = createBar(that, child, group);
             return obj.bar;
         });
 
         const barWrap = template.barWrap.cloneNode();
-        // barWrap.id = `ggantt-${that.id}${group.id}`;
         barWrap.append(...objs);
 
         that.layout.bars.append(barWrap);
@@ -166,9 +161,9 @@ export const display = {
 
         hoverGroup(label, barWrap);
 
-        that.elements.push({
-            id: group.id,
-            dom: { barWrap, label },
-        });
+        that.storage[group.id] = {
+            barWrap,
+            label,
+        };
     },
 };

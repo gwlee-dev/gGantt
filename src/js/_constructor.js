@@ -7,6 +7,7 @@ import { update } from "./_update";
 
 export const Chart = class {
     option = { ...option };
+    storage = {};
 
     constructor(root, data, userOption) {
         this.root = root;
@@ -18,9 +19,6 @@ export const Chart = class {
             this.option.autoInitialize &&
             this.init(userOption);
     }
-
-    created = [];
-    elements = [];
 
     scrollIntoX = (percent) => {
         const { scrollWidth: outer, clientWidth: inner } = this.layout.bars;
@@ -131,7 +129,7 @@ export const Chart = class {
             return timelinePos;
         };
 
-        bindStatusClass(this.created);
+        bindStatusClass(this.storage);
 
         if (this.option.useTimeline) {
             const pos = timelineFunc();
@@ -142,7 +140,7 @@ export const Chart = class {
     };
 
     removeGroup = (id) => {
-        const target = this.elements.find((el) => el.id === id);
+        const target = this.storage[id];
         Object.keys(target.dom).forEach((x) => {
             const element = target.dom[x];
             const bars = element.querySelectorAll(".ggantt-bar");
@@ -152,12 +150,12 @@ export const Chart = class {
             setTimeout(() => element.remove(), 500);
         });
         this.data = this.data.filter((x) => x.id !== id);
-        this.created = this.created.filter((x) => x.id !== id);
-        this.elements = this.elements.filter((x) => x.id !== id);
+        delete this.storage[id];
     };
 
     updateAll = (inputData) => {
-        const newData = inputData.filter((x) => x.schedule.length);
+        const data = [...inputData];
+        const newData = data.filter((x) => x.schedule.length);
         const existDataIds = this.data.map(({ id }) => id);
         const newDataIds = newData.map(({ id }) => id);
         newData
@@ -178,12 +176,14 @@ export const Chart = class {
             });
 
         this.data.forEach((group) => {
-            update[this.option.displayMode].remove(this, group, inputData);
+            update[this.option.displayMode].remove(this, group, data);
         });
 
-        this.data = inputData;
+        this.data = data;
 
         startTransition();
-        bindStatusClass(this.created);
+        bindStatusClass(this.storage);
+
+        console.log(this.data);
     };
 };

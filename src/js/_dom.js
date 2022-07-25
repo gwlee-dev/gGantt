@@ -1,15 +1,11 @@
 import { htmlReplacer, settingBar } from "./_bind";
+import { template } from "./_default";
 import { createEl } from "./_tool";
 
-export const template = {
-    barWrap: createEl("div", "bar-wrap"),
-    bar: createEl("div", "bar", "pending"),
-};
-
-export const createBar = (that, obj, customStart, customEnd) => {
+export const createBar = (that, obj, parent) => {
     const { title: name, id } = obj;
-    const start = customStart || +new Date(obj.start);
-    const end = customEnd || +new Date(obj.end);
+    const start = +new Date(obj.start);
+    const end = +new Date(obj.end);
 
     if (start > end) {
         throw new TypeError(
@@ -18,7 +14,6 @@ export const createBar = (that, obj, customStart, customEnd) => {
     }
 
     const bar = template.bar.cloneNode();
-    // bar.id = `ggantt-${that.id}${id}`;
     settingBar(start, end, bar);
 
     const barSpan = createEl("span", "text");
@@ -80,7 +75,8 @@ export const createBar = (that, obj, customStart, customEnd) => {
             instance.hide();
         });
     }
-    that.created.push({ id, bar, label, start, end });
+    that.storage[id] = { bar, label, start, end };
+    parent && (that.storage[id].parent = parent.id);
 
     return { bar, label };
 };
@@ -118,15 +114,15 @@ export const createDivider = (that) => {
     });
 };
 
-export const getChild = (that, schedule) => {
-    let childData = schedule;
+export const getChild = (that, group) => {
+    let childData = group.schedule;
     that.option.sortChild &&
         that.option.displayMode !== "compare" &&
-        (childData = [...schedule].sort(
+        (childData = [...group.schedule].sort(
             (a, b) => new Date(a.start) - new Date(b.start)
         ));
     return childData.map((child) => {
-        const obj = createBar(that, child);
+        const obj = createBar(that, child, group);
         obj.barWrap = template.barWrap.cloneNode();
         obj.barWrap.append(obj.bar);
         return obj;

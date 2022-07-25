@@ -20,7 +20,7 @@ export const settingBar = (start, end, bar) => {
     bar.style.width = beContinue ? 100 - barStart + "%" : barDuring + "%";
 };
 
-export const bindStatusClass = (created) => {
+export const bindStatusClass = (storage) => {
     const now = +new Date();
     const criteria = {
         running: (obj) => obj.start < now && obj.end > now,
@@ -29,7 +29,8 @@ export const bindStatusClass = (created) => {
     };
 
     Object.keys(criteria).forEach((name) =>
-        created
+        Object.keys(storage)
+            .map((x) => storage[x])
             .filter((obj) => criteria[name](obj))
             .map((obj) => {
                 if (![...obj.bar.classList].includes("ggantt-status-" + name))

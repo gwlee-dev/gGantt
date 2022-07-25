@@ -1,3 +1,5 @@
+import { createEl } from "./_tool";
+
 export const option = {
     autoInitialize: true,
     displayMode: "group",
@@ -16,4 +18,9 @@ export const constant = {
     lastMidnight: +new Date().setHours(0, 0, 0, 0),
     nextMidnight: +new Date().setHours(24, 0, 0, 0),
     dayTime: 86400000,
+};
+
+export const template = {
+    barWrap: createEl("div", "bar-wrap"),
+    bar: createEl("div", "bar", "pending"),
 };
