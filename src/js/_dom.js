@@ -75,7 +75,8 @@ export const createBar = (that, obj, parent) => {
             instance.hide();
         });
     }
-    that.storage[id] = { bar, label, start, end };
+    that.storage[id] = { dom: { bar, label }, start, end };
+    // console.log(that.storage[id]);
     parent && (that.storage[id].parent = parent.id);
 
     return { bar, label };

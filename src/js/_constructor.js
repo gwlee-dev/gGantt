@@ -3,7 +3,6 @@ import { constant, option } from "./_default";
 import { display } from "./_display.js";
 import { createDivider } from "./_dom";
 import { checkOptions, createEl, startTransition } from "./_tool";
-import { update } from "./_update";
 
 export const Chart = class {
     option = { ...option };
@@ -118,18 +117,18 @@ export const Chart = class {
 
         data.forEach((group) => display[this.option.displayMode](this, group));
 
-        startTransition();
-
         const timelineFunc = () => {
             this.layout.timeline.wrap.append(this.layout.timeline.timeline);
             const now = +new Date();
             const currentTime = now - constant.lastMidnight;
-            const timelinePos = currentTime / constant.dayTime;
+            const pos = currentTime / constant.dayTime;
+            const timelinePos = pos < 1 ? pos : 1;
             this.layout.timeline.timeline.style.left = timelinePos * 100 + "%";
             return timelinePos;
         };
 
         bindStatusClass(this.storage);
+        startTransition();
 
         if (this.option.useTimeline) {
             const pos = timelineFunc();
@@ -139,47 +138,38 @@ export const Chart = class {
         this.option.useDivider && createDivider(this);
     };
 
-    removeGroup = (id) => {
-        const target = this.storage[id];
-        Object.keys(target).forEach((x) => {
-            const element = target[x];
-            console.log(element);
-            const bars = element.querySelectorAll(".ggantt-bar");
-            [...bars].forEach((bar) => {
-                bar.classList.add("removing");
-            });
-            setTimeout(() => element.remove(), 500);
+    update = (inputData) => {
+        const filtered = inputData.filter(
+            (x) => typeof x.schedule !== "undefined"
+        );
+        const groups = Object.keys(filtered).map((x) => filtered[x].id);
+        const existGroups = Object.keys(this.data).map((x) => this.data[x].id);
+        const groupAddIds = groups.filter((x) => !existGroups.includes(x));
+        const groupRemoveIds = existGroups.filter((x) => !groups.includes(x));
+        // const groupModifyIds = groups.filter((x) => existGroups.includes(x));
+        // const groupModify = groups.
+
+        groupAddIds.forEach((x) => {
+            const target = filtered.find(({ id }) => id === x);
+            display[this.option.displayMode](this, target);
         });
-        delete this.storage[id];
-    };
 
-    updateAll = (inputData) => {
-        const data = [...inputData];
-        const oldData = [...this.data];
-        const newData = data.filter((x) => typeof x.schedule !== "undefined");
-        const existDataIds = this.data.map(({ id }) => id);
-        const newDataIds = newData.map(({ id }) => id);
-
-        newData
-            .filter(({ id }) => !existDataIds.includes(id))
-            .forEach((group) => display[this.option.displayMode](this, group));
-
-        oldData
-            .filter(({ id }) => !newDataIds.includes(id))
-            .forEach((group) => this.removeGroup(group.id));
-
-        newData
-            .filter(({ id }) => existDataIds.includes(id))
-            .forEach((group) =>
-                update[this.option.displayMode].modify(this, group)
+        groupRemoveIds.forEach((x) => {
+            const target = this.storage[x].dom;
+            const targetBars = Object.values(this.storage)
+                .filter(({ parent }) => parent === x)
+                .dom.map((x) => x.bar);
+            targetBars.forEach((x) => x.classList.add("removing"));
+            console.log(target);
+            setTimeout(
+                () => Object.values(target).forEach((x) => x.remove()),
+                500
             );
-
-        oldData.forEach((group) => {
-            update[this.option.displayMode].remove(this, group, newData);
         });
 
-        this.data = newData;
-        startTransition();
+        this.data = filtered;
+
         bindStatusClass(this.storage);
+        startTransition();
     };
 };

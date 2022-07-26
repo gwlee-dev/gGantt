@@ -60,7 +60,8 @@ export const display = {
         labelCollapse.append(labelCollapseInner);
         that.layout.bars.append(barCollapse);
         that.layout.labels.append(labelCollapse);
-        Object.assign(that.storage[group.id], {
+
+        Object.assign(that.storage[group.id].dom, {
             barWrap: groupBar.barWrap,
             label: groupBar.label,
             barCollapse,
@@ -98,12 +99,10 @@ export const display = {
         that.layout.bars.append(...bars);
         that.layout.labels.append(label);
 
-        const barExports = { label };
-
+        that.storage[group.id] = { dom: { label } };
         [...bars].forEach((bar, index) => {
-            barExports[`bar${index}`] = bar;
+            that.storage[group.id][`bar${index}`] = bar;
         });
-        that.storage[group.id] = barExports;
     },
     separated: (that, group) => {
         const objs = getChild(that, group);
@@ -117,15 +116,14 @@ export const display = {
         that.layout.bars.append(...bars);
         that.layout.labels.append(...labels);
 
-        const barExports = {};
+        that.storage[group.id] = { dom: {} };
 
         [...bars].forEach((bar, index) => {
-            barExports[`bar${index}`] = bar;
+            that.storage[group.id].dom[`bar${index}`] = bar;
         });
         [...labels].forEach((bar, index) => {
-            barExports[`label${index}`] = bar;
+            that.storage[group.id].dom[`label${index}`] = bar;
         });
-        that.storage[group.id] = barExports;
     },
     queue: (that, group) => {
         const earliest = Math.min(
@@ -162,8 +160,10 @@ export const display = {
         hoverGroup(label, barWrap);
 
         that.storage[group.id] = {
-            barWrap,
-            label,
+            dom: {
+                barWrap,
+                label,
+            },
         };
     },
 };

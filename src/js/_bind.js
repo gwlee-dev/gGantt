@@ -28,20 +28,17 @@ export const bindStatusClass = (storage) => {
         queued: (obj) => obj.start > now,
     };
 
-    Object.keys(criteria).forEach((name) =>
-        Object.keys(storage)
-            .map((x) => storage[x])
-            .filter((obj) => criteria[name](obj))
-            .map((obj) => {
-                if (![...obj.bar.classList].includes("ggantt-status-" + name))
-                    Array.from(obj.bar.classList)
-                        .filter((x) => x.startsWith("ggantt-status-"))
-                        .map((x) => obj.bar.classList.remove(x));
-                obj.bar.classList.add("ggantt-status-" + name);
-                obj.status = name;
-                return obj;
-            })
-    );
+    Object.keys(storage)
+        .filter((key) => typeof storage[key].start !== "undefined")
+        .forEach((key) => {
+            const obj = storage[key];
+            const stat = Object.keys(criteria).find((x) => criteria[x](obj));
+            [...obj.dom.bar.classList]
+                .filter((x) => x.startsWith("ggantt-status-"))
+                .forEach((x) => obj.bar.classList.remove(x));
+            obj.dom.bar.classList.add(`ggantt-status-${stat}`);
+            obj.status = stat;
+        });
 };
 
 export const htmlReplacer = (customKeywords, source, obj, start, end) => {
