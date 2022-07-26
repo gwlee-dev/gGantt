@@ -8,7 +8,7 @@ export const settingBar = (start, end, bar) => {
     const barDuring = ((end - start - dueOffset) / constant.dayTime) * 100;
     const barStart = ((start - constant.lastMidnight) / constant.dayTime) * 100;
 
-    !alreadyStarted && (bar.style.left = barStart + "%");
+    !alreadyStarted && (bar.style.left = `${barStart}%`);
     if (alreadyStarted && !beContinue) {
         bar.classList.remove("ggantt-suf");
         bar.classList.add("ggantt-pre");
@@ -17,7 +17,7 @@ export const settingBar = (start, end, bar) => {
         bar.classList.remove("ggantt-pre");
         bar.classList.add("ggantt-suf");
     }
-    bar.style.width = beContinue ? 100 - barStart + "%" : barDuring + "%";
+    bar.style.width = beContinue ? `${100 - barStart}%` : `${barDuring}%`;
 };
 
 export const bindStatusClass = (storage) => {
