@@ -35,7 +35,7 @@ export const bindStatusClass = (storage) => {
             const stat = Object.keys(criteria).find((x) => criteria[x](obj));
             [...obj.dom.bar.classList]
                 .filter((x) => x.startsWith("ggantt-status-"))
-                .forEach((x) => obj.bar.classList.remove(x));
+                .forEach((x) => obj.dom.bar.classList.remove(x));
             obj.dom.bar.classList.add(`ggantt-status-${stat}`);
             obj.status = stat;
         });

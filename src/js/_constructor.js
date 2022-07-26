@@ -155,20 +155,24 @@ export const Chart = class {
         });
 
         groupRemoveIds.forEach((x) => {
-            const target = this.storage[x].dom;
-            const targetBars = Object.values(this.storage)
-                .filter(({ parent }) => parent === x)
-                .dom.map((x) => x.bar);
-            targetBars.forEach((x) => x.classList.add("removing"));
-            console.log(target);
-            setTimeout(
-                () => Object.values(target).forEach((x) => x.remove()),
-                500
-            );
+            Object.keys(this.storage)
+                .filter((key) => this.storage[key].parent === x)
+                .forEach((key) =>
+                    this.storage[key].dom.bar.classList.add("removing")
+                );
+            setTimeout(() => {
+                Object.keys(this.storage[x].dom).forEach((key) => {
+                    this.storage[x].dom[key].remove();
+                });
+                delete this.storage[x];
+            }, 500);
         });
 
         this.data = filtered;
-
+        console.log(
+            JSON.stringify(this.data) === JSON.stringify(filtered) &&
+                "synchronized"
+        );
         bindStatusClass(this.storage);
         startTransition();
     };

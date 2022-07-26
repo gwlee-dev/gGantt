@@ -101,7 +101,7 @@ export const display = {
 
         that.storage[group.id] = { dom: { label } };
         [...bars].forEach((bar, index) => {
-            that.storage[group.id][`bar${index}`] = bar;
+            that.storage[group.id].dom[`bar${index}`] = bar;
         });
     },
     separated: (that, group) => {
