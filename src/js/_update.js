@@ -34,6 +34,27 @@ export const updater = (inputData, that) => {
     groupRemainingIds.forEach((groupId) => {
         const oldData = that.data.find((x) => x.id === groupId);
         const newData = filtered.find((x) => x.id === groupId);
+
+        const newDataIds = newData.schedule.map((x) => x.id);
+
+        oldData.schedule
+            .filter(({ id }) => !newDataIds.includes(id))
+            .forEach(({ id }) => {
+                const { dom } = that.storage[id];
+                dom.bar.classList.add("removing");
+                setTimeout(() => {
+                    Object.keys(dom).forEach((x) => {
+                        removeSchedule[that.option.displayMode](
+                            dom,
+                            x,
+                            this,
+                            groupId
+                        );
+                    });
+                }, 500);
+                delete that.storage[id];
+            });
+
         newData.schedule.forEach((obj) => {
             const old = oldData.schedule.find((x) => x.id === obj.id);
             if (typeof old === "undefined") {
@@ -63,16 +84,7 @@ export const updater = (inputData, that) => {
 
 const newSchedule = {
     group: (that, obj, groupId, newData) => {
-        const groupBar = that.storage[groupId].dom.bar;
-        const earliest = Math.min(
-            ...newData.schedule.map((item) => +new Date(item.start))
-        );
-        const latest = Math.max(
-            ...newData.schedule.map((item) => +new Date(item.end))
-        );
-        that.storage[groupId].start = earliest;
-        that.storage[groupId].end = latest;
-        settingBar(earliest, latest, groupBar);
+        settingGroupBar(that, groupId, newData);
         const { bar, label } = createBar(that, obj, groupId);
         const barWrap = template.barWrap.cloneNode();
         barWrap.append(bar);
@@ -101,4 +113,36 @@ const newSchedule = {
         const { bar } = createBar(that, obj, groupId);
         that.storage[groupId].dom.barWrap.append(bar);
     },
+};
+
+const removeSchedule = {
+    group: (array, index, groupProperties) => {
+        const { that, groupId, newData } = groupProperties;
+        settingGroupBar(that, groupId, newData);
+        index === "bar" && array[index].parentNode.remove();
+        array[index].remove();
+    },
+    compare: (array, index) => {
+        array[index].remove();
+    },
+    separated: (array, index) => {
+        index === "bar" && array[index].parentNode.remove();
+        array[index].remove();
+    },
+    queue: (array, index) => {
+        array[index].remove();
+    },
+};
+
+const settingGroupBar = (that, groupId, newData) => {
+    const groupBar = that.storage[groupId].dom.bar;
+    const earliest = Math.min(
+        ...newData.schedule.map((item) => +new Date(item.start))
+    );
+    const latest = Math.max(
+        ...newData.schedule.map((item) => +new Date(item.end))
+    );
+    that.storage[groupId].start = earliest;
+    that.storage[groupId].end = latest;
+    settingBar(earliest, latest, groupBar);
 };

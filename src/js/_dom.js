@@ -76,10 +76,9 @@ export const createBar = (that, obj, parent) => {
         });
     }
     that.storage[id] = { dom: { bar, label }, start, end };
-    // console.log(that.storage[id]);
     parent && (that.storage[id].parent = parent);
 
-    return { bar, label };
+    return { bar, label, id };
 };
 
 export const createDivider = (that) => {

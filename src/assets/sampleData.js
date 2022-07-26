@@ -100,21 +100,15 @@ const sampleData = [
         ],
     },
     {
-        title: "일정그룹 K~L",
+        title: "일정그룹 K나혼자~",
         id: "4",
         status: "상태값B",
         schedule: [
             {
                 title: "일정 K",
                 id: "4A",
-                start: `${today} 23:30`,
+                start: `${today} 22:30`,
                 end: `${today} 23:40`,
-            },
-            {
-                title: "일정 L",
-                id: "4B",
-                start: `${today} 23:30`,
-                end: `${today} 24:00`,
             },
         ],
     },
@@ -128,8 +122,8 @@ const sampleData2 = [
         status: "상태값A",
         schedule: [
             {
-                title: "일정 A",
-                id: "0B",
+                title: "일정 Aaabba",
+                id: "0Babbab",
                 start: `${today} 03:00:00`,
                 end: `${today} 05:00:00`,
                 data: {
@@ -213,21 +207,15 @@ const sampleData2 = [
         ],
     },
     {
-        title: "일정그룹 K~L",
+        title: "일정그룹 K만",
         id: "4",
         status: "상태값B",
         schedule: [
             {
                 title: "일정 K",
                 id: "4A",
-                start: `${today} 23:30`,
+                start: `${today} 22:30`,
                 end: `${today} 23:40`,
-            },
-            {
-                title: "일정 L",
-                id: "4B",
-                start: `${today} 23:30`,
-                end: `${today} 24:00`,
             },
         ],
     },
