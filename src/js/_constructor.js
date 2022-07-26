@@ -3,6 +3,7 @@ import { constant, option } from "./_default";
 import { display } from "./_display.js";
 import { createDivider } from "./_dom";
 import { checkOptions, createEl, startTransition } from "./_tool";
+import { updater } from "./_update";
 
 export const Chart = class {
     option = { ...option };
@@ -138,42 +139,5 @@ export const Chart = class {
         this.option.useDivider && createDivider(this);
     };
 
-    update = (inputData) => {
-        const filtered = inputData.filter(
-            (x) => typeof x.schedule !== "undefined"
-        );
-        const groups = Object.keys(filtered).map((x) => filtered[x].id);
-        const existGroups = Object.keys(this.data).map((x) => this.data[x].id);
-        const groupAddIds = groups.filter((x) => !existGroups.includes(x));
-        const groupRemoveIds = existGroups.filter((x) => !groups.includes(x));
-        // const groupModifyIds = groups.filter((x) => existGroups.includes(x));
-        // const groupModify = groups.
-
-        groupAddIds.forEach((x) => {
-            const target = filtered.find(({ id }) => id === x);
-            display[this.option.displayMode](this, target);
-        });
-
-        groupRemoveIds.forEach((x) => {
-            Object.keys(this.storage)
-                .filter((key) => this.storage[key].parent === x)
-                .forEach((key) =>
-                    this.storage[key].dom.bar.classList.add("removing")
-                );
-            setTimeout(() => {
-                Object.keys(this.storage[x].dom).forEach((key) => {
-                    this.storage[x].dom[key].remove();
-                });
-                delete this.storage[x];
-            }, 500);
-        });
-
-        this.data = filtered;
-        console.log(
-            JSON.stringify(this.data) === JSON.stringify(filtered) &&
-                "synchronized"
-        );
-        bindStatusClass(this.storage);
-        startTransition();
-    };
+    update = (inputData) => updater(inputData, this);
 };

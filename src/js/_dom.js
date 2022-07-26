@@ -77,7 +77,7 @@ export const createBar = (that, obj, parent) => {
     }
     that.storage[id] = { dom: { bar, label }, start, end };
     // console.log(that.storage[id]);
-    parent && (that.storage[id].parent = parent.id);
+    parent && (that.storage[id].parent = parent);
 
     return { bar, label };
 };
@@ -122,10 +122,11 @@ export const getChild = (that, group) => {
         (childData = [...group.schedule].sort(
             (a, b) => new Date(a.start) - new Date(b.start)
         ));
-    return childData.map((child) => {
-        const obj = createBar(that, child, group);
+    const genData = childData.map((child) => {
+        const obj = createBar(that, child, group.id);
         obj.barWrap = template.barWrap.cloneNode();
         obj.barWrap.append(obj.bar);
         return obj;
     });
+    return genData;
 };

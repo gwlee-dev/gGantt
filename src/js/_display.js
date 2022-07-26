@@ -65,7 +65,9 @@ export const display = {
             barWrap: groupBar.barWrap,
             label: groupBar.label,
             barCollapse,
+            barCollapseInner,
             labelCollapse,
+            labelCollapseInner,
         });
     },
     compare: (that, group) => {
@@ -92,6 +94,11 @@ export const display = {
         label.append(labelSpan);
 
         const objs = getChild(that, group).slice(0, 2);
+        if (typeof objs[1] === "undefined") {
+            objs[1] = {
+                barWrap: template.barWrap.cloneNode(),
+            };
+        }
         Object.keys(objs).forEach((x) => hoverGroup(label, objs[x].barWrap));
 
         const bars = objs.map((x) => x.barWrap);
@@ -147,7 +154,7 @@ export const display = {
         label.append(labelSpan);
 
         const objs = group.schedule.map((child) => {
-            const obj = createBar(that, child, group);
+            const obj = createBar(that, child, group.id);
             return obj.bar;
         });
 
